@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5/3/1 Forever AI Coach</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        .card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 0.75rem;
+        }
+
+        .input-dark {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            color: white;
+        }
+
+        .input-dark:focus {
+            outline: none;
+            border-color: #e11d48;
+            ring: 1px solid #e11d48;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e11d48; 
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #e11d48;
+            color: #e11d48;
+        }
+        
+        .tab-inactive {
+            color: #888;
+        }
+        
+        .tab-inactive:hover {
+            color: #ccc;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tag-leader {
+            background-color: #065f46;
+            color: #6ee7b7;
+        }
+        .tag-anchor {
+            background-color: #9f1239;
+            color: #fda4af;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
+
+    <!-- Header -->
+    <header class="text-center mb-8 max-w-2xl w-full">
+        <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
+        <p class="text-gray-400 text-sm">Leader/Anchor Programming Logic</p>
+        <p class="text-gray-500 text-xs mt-1">Updated: Custom Accessories (No Kroc/Ab Wheel, Limited Dips)</p>
+    </header>
+
+    <!-- Main App Container -->
+    <main class="w-full max-w-5xl space-y-6">
+
+        <!-- INSTRUCTIONS PANEL -->
+        <section class="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-6">
+            <div class="flex justify-between items-center cursor-pointer" onclick="document.getElementById('instructionsBody').classList.toggle('hidden')">
+                <h3 class="text-sm font-bold text-rose-400 uppercase tracking-wide flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    How to use this program
+                </h3>
+                <span class="text-gray-500 text-xs">Click to toggle</span>
+            </div>
+            <div id="instructionsBody" class="mt-3 text-sm text-gray-300 space-y-2 hidden">
+                <p><strong class="text-white">1. The Setup:</strong> Enter your current 1 Rep Maxes. The app calculates a "Training Max" (TM) to keep you progressing long-term without burnout.</p>
+                <p><strong class="text-white">2. Leader Phase (Cycles 1 & 2):</strong> 
+                    Start in "Leader" mode. Do Weeks 1, 2, and 3. At the end of Week 3, click <span class="text-emerald-400 font-bold">Complete Cycle (+kg)</span>. 
+                    Repeat this for a second cycle (Weights will increase again).
+                </p>
+                <p><strong class="text-white">3. 7th Week Protocol:</strong> 
+                    After 2 Leader cycles (6 weeks), take a "Deload" week using the 7th Week tab. Do NOT increase weights this week.
+                </p>
+                <p><strong class="text-white">4. Anchor Phase (Cycle 3):</strong> 
+                    Switch the Phase toggle to "Anchor" at the top. This lowers volume but increases intensity (PR Sets). Perform Weeks 1-3, then click Complete Cycle.
+                </p>
+                <p><strong class="text-white">5. Reset:</strong> 
+                    After the Anchor, do a TM Test (7th Week tab) to reset your maxes, then switch back to Leader mode for the next block.
+                </p>
+            </div>
+        </section>
+
+        <!-- User Stats Input Section -->
+        <section id="setupSection" class="card p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Program Setup
+                </h2>
+                <div class="text-xs text-gray-500">Inputs in KG</div>
+            </div>
+
+            <!-- Forever Specific Settings -->
+            <div class="mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+                <div class="flex flex-col md:flex-row gap-6 mb-4">
+                    <div class="flex-1">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Phase Type</label>
+                        <div class="flex bg-gray-700 rounded p-1">
+                            <button onclick="setPhase('leader')" id="btnLeader" class="flex-1 py-2 rounded text-sm font-bold transition-colors bg-emerald-700 text-white">Leader</button>
+                            <button onclick="setPhase('anchor')" id="btnAnchor" class="flex-1 py-2 rounded text-sm font-bold transition-colors text-gray-400 hover:text-white">Anchor</button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1" id="phaseDesc">High volume, no PR sets. Build the base.</p>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Main Lift Style</label>
+                        <select id="mainLiftStyle" class="input-dark w-full p-2 rounded text-sm">
+                            <option value="5s_pro">5's PRO (5 reps all sets, No PR)</option>
+                            <option value="original">Original 5/3/1 (PR Sets)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-700">
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-1">Supplemental Scheme</label>
+                        <select id="supplemental" class="input-dark w-full p-2 rounded text-sm">
+                            <option value="bbb_fsl">Forever BBB - Progressive (FSL %)</option>
+                            <option value="bbb_50">Forever BBB - Static (50%)</option>
+                            <option value="bbb_60">Forever BBB - Static (60%)</option>
+                            <option value="bbs">Boring But Strong (10x5 @ FSL)</option>
+                            <option value="ssl">Second Set Last (5x5 @ SSL)</option>
+                            <option value="fsl">First Set Last (5x5 @ FSL)</option>
+                            <option value="none">None (Main Work Only)</option>
+                        </select>
+                        <p class="text-[10px] text-gray-500 mt-1">"Progressive" gets heavier each week. "Static" stays same.</p>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-1">Training Max %</label>
+                        <select id="tmPercentage" class="input-dark w-full p-2 rounded text-sm">
+                            <option value="0.85">85% (Forever Recommended)</option>
+                            <option value="0.9">90% (Original)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-gray-400 uppercase">Squat 1RM</label>
+                    <input type="number" id="squatMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-gray-400 uppercase">Bench 1RM</label>
+                    <input type="number" id="benchMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-gray-400 uppercase">Deadlift 1RM</label>
+                    <input type="number" id="deadliftMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-gray-400 uppercase">Press 1RM</label>
+                    <input type="number" id="pressMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                </div>
+            </div>
+
+            <button onclick="generateProgram()" class="w-full mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded transition-all shadow-lg shadow-rose-900/50">
+                GENERATE CYCLE
+            </button>
+        </section>
+
+        <!-- Program Output Section -->
+        <section id="programSection" class="hidden animate-fade-in space-y-6">
+            
+            <!-- Cycle Info & Controls -->
+            <div class="flex flex-col md:flex-row justify-between items-end border-b border-gray-700 pb-4">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-2xl font-bold text-white">Cycle <span id="cycleCount">1</span></h3>
+                        <span id="cycleTag" class="text-xs px-2 py-1 rounded font-bold uppercase tracking-wide"></span>
+                    </div>
+                    <div class="flex gap-4 text-sm text-gray-400 mt-1">
+                        <span>TM Squat: <b id="tmSquat" class="text-rose-400"></b>kg</span>
+                        <span>TM Bench: <b id="tmBench" class="text-rose-400"></b>kg</span>
+                        <span>TM Dead: <b id="tmDead" class="text-rose-400"></b>kg</span>
+                        <span>TM Press: <b id="tmPress" class="text-rose-400"></b>kg</span>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <!-- Fixed Button -->
+                    <button id="nextCycleBtn" onclick="nextCycle()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-semibold transition-colors flex items-center gap-2">
+                        Complete Cycle (+kg)
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Weekly Tabs -->
+            <div class="flex space-x-6 overflow-x-auto pb-2" id="weekTabs">
+                <button onclick="switchWeek(1)" id="tab1" class="tab-active text-lg font-bold pb-2 transition-colors whitespace-nowrap">Week 1</button>
+                <button onclick="switchWeek(2)" id="tab2" class="tab-inactive text-lg font-bold pb-2 transition-colors whitespace-nowrap">Week 2</button>
+                <button onclick="switchWeek(3)" id="tab3" class="tab-inactive text-lg font-bold pb-2 transition-colors whitespace-nowrap">Week 3</button>
+                <button onclick="switchWeek(4)" id="tab4" class="tab-inactive text-lg font-bold pb-2 transition-colors whitespace-nowrap text-rose-500">7th Week Protocol</button>
+            </div>
+
+            <!-- 7th Week Protocol Selector (Only visible on week 4) -->
+            <div id="protocolSelector" class="hidden bg-gray-800 p-4 rounded mb-4 border border-gray-700">
+                <label class="text-sm font-bold text-gray-300 mr-3">7th Week Protocol Type:</label>
+                <select id="protocolType" onchange="renderWeek(4)" class="input-dark p-1 rounded text-sm">
+                    <option value="deload">Standard Deload (Recovery)</option>
+                    <option value="tm_test">TM Test (3-5 reps @ 100% TM)</option>
+                    <option value="pr_test">PR Test (AMRAP @ 100% TM)</option>
+                </select>
+                <p class="text-xs text-gray-500 mt-2" id="protocolDesc">Work up to a single at TM. Low stress.</p>
+            </div>
+
+            <!-- Workouts Grid -->
+            <div id="workoutsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Workout Cards Generated Here -->
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="mt-12 text-center text-gray-600 text-xs">
+        <p>AI Generated Coach based on Jim Wendler's "5/3/1 Forever".</p>
+    </footer>
+
+    <script>
+        // Global State
+        let state = {
+            cycle: 1,
+            lifts: { squat: 0, bench: 0, deadlift: 0, press: 0 },
+            tm: { squat: 0, bench: 0, deadlift: 0, press: 0 },
+            config: {
+                rounding: 2.5,
+                tmPercentage: 0.85,
+                phase: 'leader', // leader or anchor
+                mainLiftStyle: '5s_pro', // 5s_pro or original
+                supplemental: 'bbb_fsl', // Defaulted to Progressive
+                protocol7: 'deload'
+            }
+        };
+
+        // Accessory Exercise Database
+        // MODIFIED: Removed Kroc Rows, Removed Ab Wheel, Separated Dips
+        const accessories = {
+            // Standard Push (No Dips)
+            pushNoDips: [
+                { name: "Tricep Pushdowns", reps: "15-20" },
+                { name: "Push-ups", reps: "AMRAP" },
+                { name: "DB Incline Press", reps: "10-12" },
+                { name: "DB Overhead Press", reps: "10-12" },
+                { name: "Close Grip Bench", reps: "8-10" },
+                { name: "Floor Press", reps: "8-10" },
+                { name: "Cable Flyes", reps: "15-20" }
+            ],
+            // Dips Only (For Press Day)
+            dips: [
+                { name: "Dips (Weighted or BW)", reps: "10-15" }
+            ],
+            pull: [
+                { name: "Face Pulls", reps: "20" },
+                { name: "Chin-ups / Pull-ups", reps: "5-10" },
+                { name: "DB Rows (Standard/Strict)", reps: "10-15" }, // Replaced Kroc
+                { name: "Chest Supported Rows", reps: "10-12" }, // Added
+                { name: "Lat Pulldowns", reps: "10-12" },
+                { name: "Barbell Rows", reps: "8-10" },
+                { name: "Band Pull-Aparts", reps: "25" },
+                { name: "Seated Cable Rows", reps: "10-15" } // Added
+            ],
+            abs: [
+                { name: "Hanging Leg Raises", reps: "10-15" },
+                { name: "Toes to Bar", reps: "8-12" }, // Added
+                { name: "Lying Leg Raises", reps: "15-20" }, // Added
+                { name: "Cable Crunches", reps: "15-20" },
+                { name: "Planks", reps: "60 sec" }
+                // Removed Ab Wheel
+            ],
+            singleLeg: [
+                { name: "Bulgarian Split Squats", reps: "8-10 per leg" },
+                { name: "Walking Lunges", reps: "20 steps" },
+                { name: "Step Ups", reps: "10 per leg" },
+                { name: "Kettlebell Swings", reps: "15-20" },
+                { name: "Reverse Lunges", reps: "10 per leg" },
+                { name: "Lateral Lunges", reps: "10 per leg" }
+            ]
+        };
+
+        // Logic for Phase Switching
+        function setPhase(phase) {
+            state.config.phase = phase;
+            const btnLeader = document.getElementById('btnLeader');
+            const btnAnchor = document.getElementById('btnAnchor');
+            const phaseDesc = document.getElementById('phaseDesc');
+            const mainLiftSelect = document.getElementById('mainLiftStyle');
+            const suppSelect = document.getElementById('supplemental');
+
+            if (phase === 'leader') {
+                btnLeader.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors bg-emerald-700 text-white';
+                btnAnchor.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors text-gray-400 hover:text-white';
+                phaseDesc.innerText = "Higher volume, lower intensity. Build the base. Recommend 5's PRO.";
+                
+                // Set Recommended Defaults for Leader
+                mainLiftSelect.value = '5s_pro';
+                suppSelect.value = 'bbb_fsl'; 
+            } else {
+                btnAnchor.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors bg-rose-700 text-white';
+                btnLeader.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors text-gray-400 hover:text-white';
+                phaseDesc.innerText = "Lower volume, higher intensity (PR Sets). Realize strength. Recommend FSL.";
+                
+                // Set Recommended Defaults for Anchor
+                mainLiftSelect.value = 'original';
+                suppSelect.value = 'fsl'; 
+            }
+        }
+
+        // Rounding Helper
+        function mRound(weight, increment) {
+            return Math.round(weight / increment) * increment;
+        }
+        function fmt(weight) {
+            return weight % 1 === 0 ? weight : weight.toFixed(1);
+        }
+
+        // Generate Program
+        function generateProgram() {
+            state.lifts.squat = parseFloat(document.getElementById('squatMax').value) || 0;
+            state.lifts.bench = parseFloat(document.getElementById('benchMax').value) || 0;
+            state.lifts.deadlift = parseFloat(document.getElementById('deadliftMax').value) || 0;
+            state.lifts.press = parseFloat(document.getElementById('pressMax').value) || 0;
+
+            state.config.tmPercentage = parseFloat(document.getElementById('tmPercentage').value);
+            state.config.mainLiftStyle = document.getElementById('mainLiftStyle').value;
+            state.config.supplemental = document.getElementById('supplemental').value;
+
+            // Calculate Training Maxes
+            state.tm.squat = state.lifts.squat * state.config.tmPercentage;
+            state.tm.bench = state.lifts.bench * state.config.tmPercentage;
+            state.tm.deadlift = state.lifts.deadlift * state.config.tmPercentage;
+            state.tm.press = state.lifts.press * state.config.tmPercentage;
+
+            if (state.tm.squat === 0 && state.tm.bench === 0 && state.tm.deadlift === 0) {
+                alert("Please enter at least one 1RM.");
+                return;
+            }
+
+            updateTMDisplay();
+            programSection.classList.remove('hidden');
+            switchWeek(1);
+            programSection.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('instructionsBody').classList.remove('hidden');
+        }
+
+        function updateTMDisplay() {
+            document.getElementById('cycleCount').innerText = state.cycle;
+            const tag = document.getElementById('cycleTag');
+            if(state.config.phase === 'leader') {
+                tag.innerText = "LEADER";
+                tag.className = "text-xs px-2 py-1 rounded font-bold uppercase tracking-wide tag-leader";
+            } else {
+                tag.innerText = "ANCHOR";
+                tag.className = "text-xs px-2 py-1 rounded font-bold uppercase tracking-wide tag-anchor";
+            }
+
+            document.getElementById('tmSquat').innerText = fmt(mRound(state.tm.squat, 2.5));
+            document.getElementById('tmBench').innerText = fmt(mRound(state.tm.bench, 2.5));
+            document.getElementById('tmDead').innerText = fmt(mRound(state.tm.deadlift, 2.5));
+            document.getElementById('tmPress').innerText = fmt(mRound(state.tm.press, 2.5));
+        }
+
+        function nextCycle() {
+            // 1. Update State
+            state.cycle++;
+            state.tm.squat += 5;
+            state.tm.deadlift += 5;
+            state.tm.bench += 2.5;
+            state.tm.press += 2.5;
+
+            // 2. Update UI Text
+            updateTMDisplay();
+
+            // 3. Re-render and switch to Week 1
+            switchWeek(1);
+
+            // 4. Visual Feedback on Button
+            const btn = document.getElementById('nextCycleBtn');
+            const originalText = `Complete Cycle (+kg) <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>`;
+            
+            btn.innerHTML = `Cycle ${state.cycle} Started! ✓`;
+            btn.className = "bg-emerald-600 text-white px-4 py-2 rounded text-sm font-bold transition-colors flex items-center gap-2";
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.className = "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-semibold transition-colors flex items-center gap-2";
+            }, 2000);
+        }
+
+        function switchWeek(weekNum) {
+            [1,2,3,4].forEach(n => {
+                const btn = document.getElementById(`tab${n}`);
+                if(n === weekNum) {
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('tab-active');
+                } else {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                }
+            });
+
+            // Show/Hide 7th week protocol selector
+            const protocolSel = document.getElementById('protocolSelector');
+            if(weekNum === 4) {
+                protocolSel.classList.remove('hidden');
+            } else {
+                protocolSel.classList.add('hidden');
+            }
+
+            renderWeek(weekNum);
+        }
+
+        // Intelligent Accessory Selection
+        function getAccessories(liftName, weekNum, liftType) {
+            // HIGH VARIANCE SEED
+            // Include Cycle, Week, and Lift Name Length to ensure every workout is unique
+            // Multipliers (x13, x7) help scatter the selection to avoid patterns
+            const seed = (state.cycle * 13) + (weekNum * 7) + liftName.length;
+
+            // PUSH Logic: 
+            // If Overhead Press day, force Dips (or rotate dips with others if desired, but user asked for Dips 1x week)
+            // Since user wants "Dips done once a week", we assign Dips exclusively to Press day.
+            // For other days, we use the "pushNoDips" list.
+            let pushEx;
+            if (liftName === 'Overhead Press') {
+                pushEx = accessories.dips[0]; // Always Dips on Press Day
+            } else {
+                pushEx = accessories.pushNoDips[seed % accessories.pushNoDips.length];
+            }
+
+            const pullEx = accessories.pull[(seed + 1) % accessories.pull.length];
+            
+            let coreEx;
+            let coreLabel;
+            
+            if (liftType === 'upper') {
+                coreLabel = "SINGLE LEG";
+                coreEx = accessories.singleLeg[(seed + 2) % accessories.singleLeg.length];
+            } else {
+                coreLabel = "ABS / CORE";
+                coreEx = accessories.abs[(seed + 3) % accessories.abs.length];
+            }
+
+            return {
+                push: pushEx,
+                pull: pullEx,
+                core: coreEx,
+                coreLabel: coreLabel
+            };
+        }
+
+        function renderWeek(week) {
+            workoutsContainer.innerHTML = '';
+            
+            // Order: Squat, Bench, Deadlift, Press
+            const lifts = [
+                { name: 'Squat', tm: state.tm.squat, type: 'lower' },
+                { name: 'Bench Press', tm: state.tm.bench, type: 'upper' },
+                { name: 'Deadlift', tm: state.tm.deadlift, type: 'lower' },
+                { name: 'Overhead Press', tm: state.tm.press, type: 'upper' }
+            ];
+
+            // Update 7th week desc if needed
+            if(week === 4) {
+                const type = document.getElementById('protocolType').value;
+                const desc = document.getElementById('protocolDesc');
+                if(type === 'deload') desc.innerText = "Standard Deload: 70%x5, 80%x3-5, 90%x1, 100%x1. No supplemental.";
+                if(type === 'tm_test') desc.innerText = "TM Test: 70%x5, 80%x5, 90%x5, 100%x3-5. Solid reps only.";
+                if(type === 'pr_test') desc.innerText = "PR Test: 70%x5, 80%x5, 90%x5, 100%x AMRAP.";
+            }
+
+            lifts.forEach(lift => {
+                if(lift.tm > 0) {
+                    workoutsContainer.innerHTML += createWorkoutCard(lift, week);
+                }
+            });
+        }
+
+        function createWorkoutCard(lift, week) {
+            const tm = lift.tm;
+            const round = 2.5;
+            const is5sPro = state.config.mainLiftStyle === '5s_pro';
+            
+            // Main Work Logic
+            let sets = [];
+            let reps = [];
+            
+            // 7th Week Protocol Handling
+            if (week === 4) {
+                const protocol = document.getElementById('protocolType').value;
+                if (protocol === 'deload') {
+                    sets = [0.70, 0.80, 0.90, 1.0];
+                    reps = ["5", "3-5", "1", "1"];
+                } else if (protocol === 'tm_test') {
+                    sets = [0.70, 0.80, 0.90, 1.0];
+                    reps = ["5", "5", "5", "3-5 (Test)"];
+                } else {
+                    sets = [0.70, 0.80, 0.90, 1.0];
+                    reps = ["5", "5", "5", "PR Set"];
+                }
+            } else {
+                // Standard Weeks
+                if (week === 1) {
+                    sets = [0.65, 0.75, 0.85];
+                    reps = is5sPro ? ["5", "5", "5"] : ["5", "5", "5+"];
+                } else if (week === 2) {
+                    sets = [0.70, 0.80, 0.90];
+                    reps = is5sPro ? ["5", "5", "5"] : ["3", "3", "3+"];
+                } else if (week === 3) {
+                    sets = [0.75, 0.85, 0.95];
+                    reps = is5sPro ? ["5", "5", "5"] : ["5", "3", "1+"];
+                }
+            }
+
+            const workSetsHtml = sets.map((pct, idx) => {
+                const weight = fmt(mRound(tm * pct, round));
+                return `
+                    <div class="flex justify-between border-b border-gray-800 pb-1 mb-1 border-transparent rounded px-1">
+                        <span class="text-gray-300">${(pct*100).toFixed(0)}%</span>
+                        <span class="font-mono text-gray-400">
+                            ${weight}kg x ${reps[idx]}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+
+            // Supplemental Logic (Not done on Week 4)
+            let supplementalHtml = '';
+            if (week !== 4 && state.config.supplemental !== 'none') {
+                let scheme = state.config.supplemental;
+                let suppWeight = 0;
+                let suppSetsReps = "";
+                let suppName = "";
+
+                // Determine FSL Weight (This changes week to week: 65% -> 70% -> 75%)
+                const fslPct = week === 1 ? 0.65 : (week === 2 ? 0.70 : 0.75);
+                const fslWeight = fmt(mRound(tm * fslPct, round));
+                
+                // Determine SSL Weight
+                const sslPct = week === 1 ? 0.75 : (week === 2 ? 0.80 : 0.85);
+                const sslWeight = fmt(mRound(tm * sslPct, round));
+
+                if (scheme.startsWith('bbb')) {
+                    suppName = "Forever BBB";
+                    let pct = 0.50;
+                    
+                    if(scheme === 'bbb_40') pct = 0.40;
+                    if(scheme === 'bbb_60') pct = 0.60;
+                    
+                    if(scheme === 'bbb_fsl') {
+                        pct = fslPct; // Use the progressive percentage
+                        suppWeight = fslWeight;
+                    } else {
+                        suppWeight = fmt(mRound(tm * pct, round));
+                    }
+                    
+                    suppSetsReps = `5 x 10 @ ${suppWeight}kg (${(pct*100).toFixed(0)}%)`;
+                } else if (scheme === 'bbs') {
+                    suppName = "Boring But Strong";
+                    suppSetsReps = `10 x 5 @ ${fslWeight}kg (FSL)`;
+                } else if (scheme === 'fsl') {
+                    suppName = "First Set Last";
+                    suppSetsReps = `5 x 5 @ ${fslWeight}kg (FSL)`;
+                } else if (scheme === 'ssl') {
+                    suppName = "Second Set Last";
+                    suppSetsReps = `5 x 5 @ ${sslWeight}kg (SSL)`;
+                }
+
+                supplementalHtml = `
+                    <div class="mt-4 pt-2 border-t border-gray-700">
+                        <div class="text-xs text-emerald-400 font-bold uppercase mb-1">${suppName}</div>
+                        <div class="text-sm text-white font-mono">${suppSetsReps}</div>
+                    </div>
+                `;
+            }
+
+            // Updated Forever Assistance (Intelligent Rotation with Leader/Anchor logic)
+            let assistanceHtml = '';
+            if(week !== 4) {
+                const acc = getAccessories(lift.name, week, lift.type);
+                
+                // Determine Total Reps based on Phase
+                const totalReps = state.config.phase === 'leader' ? "25-50" : "50-100";
+                
+                // Calculate Sets x Reps based on totalReps target
+                const calcSetsReps = (range) => {
+                    if (state.config.phase === 'leader') return "3 x 10-15"; // Conservative for Leader
+                    return "5 x 10-20"; // Aggressive for Anchor
+                };
+
+                assistanceHtml = `
+                    <div class="mt-4 pt-2 border-t border-gray-700">
+                        <div class="text-xs text-blue-400 font-bold uppercase mb-2">Accessory Work (${totalReps} reps total)</div>
+                        <div class="space-y-2 text-sm text-gray-300">
+                            <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PUSH</span>
+                                    <span>${acc.push.name}</span>
+                                </div>
+                                <div class="font-mono text-gray-400 text-xs">${calcSetsReps(acc.push.reps)}</div>
+                            </div>
+                            <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PULL</span>
+                                    <span>${acc.pull.name}</span>
+                                </div>
+                                <div class="font-mono text-gray-400 text-xs">${calcSetsReps(acc.pull.reps)}</div>
+                            </div>
+                            <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${acc.coreLabel}</span>
+                                    <span>${acc.core.name}</span>
+                                </div>
+                                <div class="font-mono text-gray-400 text-xs">${calcSetsReps(acc.core.reps)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="card p-5 relative">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="text-xl font-bold text-white">${lift.name}</h4>
+                        <div class="text-xs text-gray-500 font-mono">TM: ${tm}kg</div>
+                    </div>
+                    <div class="space-y-1">
+                        ${workSetsHtml}
+                    </div>
+                    ${supplementalHtml}
+                    ${assistanceHtml}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
