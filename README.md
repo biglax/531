@@ -4,7 +4,7 @@
 
 <h2>🔗 Live App</h2>
 
-<p><a href="https://www.google.com/url?sa=E&source=gmail&q=https://your-username.github.io/531-forever-coach"><strong>Click Here to Use the App</strong></a>
+<p><a href="https://biglax.github.io/531/"><strong>Click Here to Use the App</strong></a>
 
 
 
