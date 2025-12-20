@@ -85,7 +85,7 @@
     <header class="text-center mb-8 max-w-2xl w-full">
         <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
         <p class="text-gray-400 text-sm">Leader/Anchor Programming Logic</p>
-        <p class="text-gray-500 text-xs mt-1">Updated: Custom Accessories (No Kroc/Ab Wheel, Limited Dips)</p>
+        <p class="text-gray-500 text-xs mt-1">Updated: Clear Math Explanation</p>
     </header>
 
     <!-- Main App Container -->
@@ -98,25 +98,48 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    How to use this program
+                    How to use this program (Step-by-Step)
                 </h3>
                 <span class="text-gray-500 text-xs">Click to toggle</span>
             </div>
-            <div id="instructionsBody" class="mt-3 text-sm text-gray-300 space-y-2 hidden">
-                <p><strong class="text-white">1. The Setup:</strong> Enter your current 1 Rep Maxes. The app calculates a "Training Max" (TM) to keep you progressing long-term without burnout.</p>
-                <p><strong class="text-white">2. Leader Phase (Cycles 1 & 2):</strong> 
-                    Start in "Leader" mode. Do Weeks 1, 2, and 3. At the end of Week 3, click <span class="text-emerald-400 font-bold">Complete Cycle (+kg)</span>. 
-                    Repeat this for a second cycle (Weights will increase again).
-                </p>
-                <p><strong class="text-white">3. 7th Week Protocol:</strong> 
-                    After 2 Leader cycles (6 weeks), take a "Deload" week using the 7th Week tab. Do NOT increase weights this week.
-                </p>
-                <p><strong class="text-white">4. Anchor Phase (Cycle 3):</strong> 
-                    Switch the Phase toggle to "Anchor" at the top. This lowers volume but increases intensity (PR Sets). Perform Weeks 1-3, then click Complete Cycle.
-                </p>
-                <p><strong class="text-white">5. Reset:</strong> 
-                    After the Anchor, do a TM Test (7th Week tab) to reset your maxes, then switch back to Leader mode for the next block.
-                </p>
+            <div id="instructionsBody" class="mt-3 text-sm text-gray-300 space-y-3 hidden">
+                <div class="border-l-4 border-emerald-600 pl-3">
+                    <h4 class="font-bold text-white mb-1">Phase 1: The LEADER (6 Weeks)</h4>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Step 1:</strong> Enter 1RMs and click <span class="text-rose-400 font-bold">"CALCULATE STARTING WEIGHTS"</span>. Ensure "Leader" is active.</li>
+                        <li><strong>Step 2:</strong> Complete Week 1, 2, and 3 workouts.</li>
+                        <li><strong>Step 3:</strong> Click <span class="text-emerald-400 font-bold">"Complete Cycle (+kg)"</span>. Your weights increase.</li>
+                        <li><strong>Step 4:</strong> Complete Week 1, 2, and 3 again (Cycle 2).</li>
+                        <li><strong>Step 5:</strong> Click <span class="text-emerald-400 font-bold">"Complete Cycle (+kg)"</span> again.</li>
+                    </ul>
+                </div>
+                
+                <div class="border-l-4 border-yellow-600 pl-3">
+                    <h4 class="font-bold text-white mb-1">Phase 2: The DELOAD (1 Week)</h4>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Step 6:</strong> Click the <strong>"7th Week Protocol"</strong> tab. Select "Deload".</li>
+                        <li><strong>Step 7:</strong> Perform the Deload workouts for one week. Do not increase weights.</li>
+                    </ul>
+                </div>
+
+                <div class="border-l-4 border-rose-600 pl-3">
+                    <h4 class="font-bold text-white mb-1">Phase 3: The ANCHOR (3 Weeks)</h4>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Step 8:</strong> Click the <strong>"Anchor"</strong> button at the top. <span class="text-rose-400 italic">Do NOT click "Calculate Starting Weights" again!</span></li>
+                        <li><strong>Step 9:</strong> Complete Weeks 1, 2, and 3. Push for PRs on main sets.</li>
+                        <li><strong>Step 10:</strong> Click <span class="text-emerald-400 font-bold">"Complete Cycle (+kg)"</span> to finish the macrocycle.</li>
+                    </ul>
+                </div>
+
+                <div class="border-l-4 border-blue-500 pl-3">
+                    <h4 class="font-bold text-white mb-1">Phase 4: The TM TEST & RESET (1 Week)</h4>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Step 11:</strong> Go to "7th Week Protocol" tab again. Select <strong>"TM Test"</strong>.</li>
+                        <li><strong>Step 12:</strong> Perform your test. Enter your reps in the <strong>"Reps Achieved"</strong> box.</li>
+                        <li><strong>Step 13:</strong> Click <strong>"Update 1RM"</strong>. The system will reverse-calculate the input needed to give you the correct +2.5kg/+5kg progression.</li>
+                        <li><strong>Step 14:</strong> Switch back to <strong>"Leader"</strong> and click <strong>"CALCULATE STARTING WEIGHTS"</strong> to restart at Step 1 with your NEW numbers.</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
@@ -130,7 +153,7 @@
                     </svg>
                     Program Setup
                 </h2>
-                <div class="text-xs text-gray-500">Inputs in KG</div>
+                <div class="text-xs text-gray-500">Inputs in KG (Rounding: 2.5kg)</div>
             </div>
 
             <!-- Forever Specific Settings -->
@@ -146,7 +169,8 @@
                     </div>
                     <div class="flex-1">
                         <label class="block text-gray-300 text-sm font-bold mb-2">Main Lift Style</label>
-                        <select id="mainLiftStyle" class="input-dark w-full p-2 rounded text-sm">
+                        <!-- Added ONCHANGE for instant updates -->
+                        <select id="mainLiftStyle" onchange="updateConfig()" class="input-dark w-full p-2 rounded text-sm">
                             <option value="5s_pro">5's PRO (5 reps all sets, No PR)</option>
                             <option value="original">Original 5/3/1 (PR Sets)</option>
                         </select>
@@ -156,7 +180,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-700">
                     <div>
                         <label class="block text-gray-400 text-xs mb-1">Supplemental Scheme</label>
-                        <select id="supplemental" class="input-dark w-full p-2 rounded text-sm">
+                        <!-- Added ONCHANGE for instant updates -->
+                        <select id="supplemental" onchange="updateConfig()" class="input-dark w-full p-2 rounded text-sm">
                             <option value="bbb_fsl">Forever BBB - Progressive (FSL %)</option>
                             <option value="bbb_50">Forever BBB - Static (50%)</option>
                             <option value="bbb_60">Forever BBB - Static (60%)</option>
@@ -168,7 +193,7 @@
                         <p class="text-[10px] text-gray-500 mt-1">"Progressive" gets heavier each week. "Static" stays same.</p>
                     </div>
                     <div>
-                        <label class="block text-gray-400 text-xs mb-1">Training Max %</label>
+                        <label class="block text-gray-400 text-xs mb-1">Training Max % (Reset Only)</label>
                         <select id="tmPercentage" class="input-dark w-full p-2 rounded text-sm">
                             <option value="0.85">85% (Forever Recommended)</option>
                             <option value="0.9">90% (Original)</option>
@@ -196,9 +221,10 @@
                 </div>
             </div>
 
-            <button onclick="generateProgram()" class="w-full mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded transition-all shadow-lg shadow-rose-900/50">
-                GENERATE CYCLE
+            <button id="btnGenerate" onclick="generateProgram()" class="w-full mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded transition-all shadow-lg shadow-rose-900/50">
+                CALCULATE STARTING WEIGHTS (RESET)
             </button>
+            <p class="text-center text-xs text-gray-500 mt-2">Only click this when starting a brand new program (Cycle 1).</p>
         </section>
 
         <!-- Program Output Section -->
@@ -278,53 +304,89 @@
         };
 
         // Accessory Exercise Database
-        // MODIFIED: Removed Kroc Rows, Removed Ab Wheel, Separated Dips
+        // Organized by Goal/Day to optimize split
         const accessories = {
-            // Standard Push (No Dips)
-            pushNoDips: [
-                { name: "Tricep Pushdowns", reps: "15-20" },
-                { name: "Push-ups", reps: "AMRAP" },
-                { name: "DB Incline Press", reps: "10-12" },
-                { name: "DB Overhead Press", reps: "10-12" },
-                { name: "Close Grip Bench", reps: "8-10" },
-                { name: "Floor Press", reps: "8-10" },
-                { name: "Cable Flyes", reps: "15-20" }
-            ],
-            // Dips Only (For Press Day)
-            dips: [
-                { name: "Dips (Weighted or BW)", reps: "10-15" }
-            ],
-            pull: [
-                { name: "Face Pulls", reps: "20" },
-                { name: "Chin-ups / Pull-ups", reps: "5-10" },
-                { name: "DB Rows (Standard/Strict)", reps: "10-15" }, // Replaced Kroc
-                { name: "Chest Supported Rows", reps: "10-12" }, // Added
-                { name: "Lat Pulldowns", reps: "10-12" },
-                { name: "Barbell Rows", reps: "8-10" },
-                { name: "Band Pull-Aparts", reps: "25" },
-                { name: "Seated Cable Rows", reps: "10-15" } // Added
-            ],
-            abs: [
-                { name: "Hanging Leg Raises", reps: "10-15" },
-                { name: "Toes to Bar", reps: "8-12" }, // Added
-                { name: "Lying Leg Raises", reps: "15-20" }, // Added
-                { name: "Cable Crunches", reps: "15-20" },
-                { name: "Planks", reps: "60 sec" }
-                // Removed Ab Wheel
-            ],
-            singleLeg: [
-                { name: "Bulgarian Split Squats", reps: "8-10 per leg" },
-                { name: "Walking Lunges", reps: "20 steps" },
-                { name: "Step Ups", reps: "10 per leg" },
-                { name: "Kettlebell Swings", reps: "15-20" },
-                { name: "Reverse Lunges", reps: "10 per leg" },
-                { name: "Lateral Lunges", reps: "10 per leg" }
-            ]
+            squatDay: {
+                push: [
+                    { name: "Tricep Pushdowns", reps: "3 x 15-20" },
+                    { name: "Overhead Tricep Ext", reps: "3 x 12-15" },
+                    { name: "Skullcrushers", reps: "3 x 10-12" }
+                ],
+                pull: [
+                    { name: "Chin-ups / Pull-ups", reps: "3 x 5-10" },
+                    { name: "Lat Pulldowns", reps: "3 x 10-12" }
+                ],
+                core: [
+                    { name: "Hanging Leg Raises", reps: "3 x 10-15" },
+                    { name: "Toes to Bar", reps: "3 x 8-10" },
+                    { name: "Lying Leg Raises", reps: "3 x 15-20" }
+                ]
+            },
+            benchDay: {
+                push: [
+                    { name: "Close Grip Bench", reps: "3 x 8-10" },
+                    { name: "DB Incline Press", reps: "3 x 10-12" },
+                    { name: "Push-ups", reps: "3 x AMRAP" }
+                ],
+                pull: [
+                    { name: "DB Rows", reps: "3 x 10-15" },
+                    { name: "Chest Supported Rows", reps: "3 x 10-12" },
+                    { name: "Cable Rows", reps: "3 x 12-15" }
+                ],
+                core: [
+                    { name: "Bulgarian Split Squats", reps: "3 x 8-10 leg" },
+                    { name: "Walking Lunges", reps: "3 x 20 steps" },
+                    { name: "Reverse Lunges", reps: "3 x 10 leg" }
+                ]
+            },
+            deadliftDay: {
+                push: [
+                    { name: "Push-ups", reps: "3 x AMRAP" },
+                    { name: "DB Floor Press", reps: "3 x 10-12" }
+                ],
+                pull: [
+                    { name: "Face Pulls", reps: "3 x 20" },
+                    { name: "Band Pull-Aparts", reps: "3 x 25" }
+                ],
+                core: [
+                    { name: "Planks", reps: "3 x 60s" },
+                    { name: "Side Planks", reps: "3 x 30s side" },
+                    { name: "Ab Wheel Rollouts", reps: "3 x 10-12" }
+                ]
+            },
+            pressDay: {
+                push: [
+                    { name: "Dips (Weighted or BW)", reps: "3 x 10-15" }
+                ],
+                pull: [
+                    { name: "Lat Pulldowns", reps: "3 x 10-12" },
+                    { name: "Chin-ups", reps: "3 x AMRAP" }
+                ],
+                core: [
+                    { name: "Back Extensions", reps: "3 x 15" },
+                    { name: "Kettlebell Swings", reps: "3 x 15-20" },
+                    { name: "Step Ups", reps: "3 x 10 leg" }
+                ]
+            }
         };
 
-        // Logic for Phase Switching
+        // NEW: Function to handle instant updates to settings without resetting TM
+        function updateConfig() {
+            // Read inputs
+            state.config.mainLiftStyle = document.getElementById('mainLiftStyle').value;
+            state.config.supplemental = document.getElementById('supplemental').value;
+            // Note: We deliberately do NOT update TM Percentage here as that requires a recalculation
+            
+            // Refresh View
+            const activeTab = document.querySelector('.tab-active') ? document.querySelector('.tab-active').id.replace('tab', '') : 1;
+            renderWeek(parseInt(activeTab));
+        }
+
+        // Logic for Phase Switching (UPDATED)
         function setPhase(phase) {
             state.config.phase = phase;
+            
+            // Visual Updates
             const btnLeader = document.getElementById('btnLeader');
             const btnAnchor = document.getElementById('btnAnchor');
             const phaseDesc = document.getElementById('phaseDesc');
@@ -348,28 +410,60 @@
                 mainLiftSelect.value = 'original';
                 suppSelect.value = 'fsl'; 
             }
+            
+            // Trigger config update to apply these new defaults
+            updateConfig();
+            updateTMDisplay();
         }
 
-        // Rounding Helper
+        // Rounding Helper - MODIFIED FOR 2.5KG PLATE MATH
         function mRound(weight, increment) {
-            return Math.round(weight / increment) * increment;
+            // Default increment to 2.5 if not provided
+            const inc = increment || 2.5; 
+            return Math.round(weight / inc) * inc;
         }
         function fmt(weight) {
+            // Ensure visual consistency
             return weight % 1 === 0 ? weight : weight.toFixed(1);
         }
 
-        // Generate Program
+        let resetConfirmationPending = false;
+
+        // Generate Program (INITIAL SETUP - RESET)
         function generateProgram() {
+            const btn = document.getElementById('btnGenerate');
+            
+            // Safety Check for Cycle > 1 with "Click Again" logic
+            if(state.cycle > 1 && !resetConfirmationPending) {
+                resetConfirmationPending = true;
+                btn.innerText = "⚠️ CONFIRM RESET? (CLICK AGAIN)";
+                btn.className = "w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded transition-all shadow-lg animate-pulse";
+                
+                // Reset timeout after 3 seconds
+                setTimeout(() => {
+                    resetConfirmationPending = false;
+                    btn.innerText = "CALCULATE STARTING WEIGHTS (RESET)";
+                    btn.className = "w-full mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded transition-all shadow-lg shadow-rose-900/50";
+                }, 3000);
+                return;
+            }
+
+            // Execute Reset
+            resetConfirmationPending = false;
+            btn.innerText = "CALCULATE STARTING WEIGHTS (RESET)";
+            btn.className = "w-full mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded transition-all shadow-lg shadow-rose-900/50";
+
+            state.cycle = 1; // Reset cycle count
             state.lifts.squat = parseFloat(document.getElementById('squatMax').value) || 0;
             state.lifts.bench = parseFloat(document.getElementById('benchMax').value) || 0;
             state.lifts.deadlift = parseFloat(document.getElementById('deadliftMax').value) || 0;
             state.lifts.press = parseFloat(document.getElementById('pressMax').value) || 0;
 
             state.config.tmPercentage = parseFloat(document.getElementById('tmPercentage').value);
-            state.config.mainLiftStyle = document.getElementById('mainLiftStyle').value;
-            state.config.supplemental = document.getElementById('supplemental').value;
+            // Apply current dropdown settings
+            updateConfig(); 
 
-            // Calculate Training Maxes
+            // Calculate Initial Training Maxes
             state.tm.squat = state.lifts.squat * state.config.tmPercentage;
             state.tm.bench = state.lifts.bench * state.config.tmPercentage;
             state.tm.deadlift = state.lifts.deadlift * state.config.tmPercentage;
@@ -454,42 +548,22 @@
             renderWeek(weekNum);
         }
 
-        // Intelligent Accessory Selection
-        function getAccessories(liftName, weekNum, liftType) {
-            // HIGH VARIANCE SEED
-            // Include Cycle, Week, and Lift Name Length to ensure every workout is unique
-            // Multipliers (x13, x7) help scatter the selection to avoid patterns
+        // Helper: Day-Aware Accessory Selection
+        function getAccessories(liftName, weekNum) {
             const seed = (state.cycle * 13) + (weekNum * 7) + liftName.length;
 
-            // PUSH Logic: 
-            // If Overhead Press day, force Dips (or rotate dips with others if desired, but user asked for Dips 1x week)
-            // Since user wants "Dips done once a week", we assign Dips exclusively to Press day.
-            // For other days, we use the "pushNoDips" list.
-            let pushEx;
-            if (liftName === 'Overhead Press') {
-                pushEx = accessories.dips[0]; // Always Dips on Press Day
-            } else {
-                pushEx = accessories.pushNoDips[seed % accessories.pushNoDips.length];
-            }
+            let pool;
+            if(liftName === 'Squat') pool = accessories.squatDay;
+            else if(liftName === 'Bench Press') pool = accessories.benchDay;
+            else if(liftName === 'Deadlift') pool = accessories.deadliftDay;
+            else pool = accessories.pressDay;
 
-            const pullEx = accessories.pull[(seed + 1) % accessories.pull.length];
-            
-            let coreEx;
-            let coreLabel;
-            
-            if (liftType === 'upper') {
-                coreLabel = "SINGLE LEG";
-                coreEx = accessories.singleLeg[(seed + 2) % accessories.singleLeg.length];
-            } else {
-                coreLabel = "ABS / CORE";
-                coreEx = accessories.abs[(seed + 3) % accessories.abs.length];
-            }
-
+            // Pick based on seed
             return {
-                push: pushEx,
-                pull: pullEx,
-                core: coreEx,
-                coreLabel: coreLabel
+                push: pool.push[seed % pool.push.length],
+                pull: pool.pull[(seed + 1) % pool.pull.length],
+                core: pool.core[(seed + 2) % pool.core.length],
+                label: (liftName === 'Bench Press' || liftName === 'Overhead Press') ? 'LEG/CORE' : 'ABS/CORE'
             };
         }
 
@@ -520,14 +594,78 @@
             });
         }
 
+        // New Helper: Calculate 1RM from TM and Reps
+        window.calculateNewMax = function(liftName, tmWeight) {
+            // liftName in card has spaces (e.g. "Overhead Press"), input IDs are specific
+            let inputId = '';
+            if(liftName === 'Squat') inputId = 'squatMax';
+            else if(liftName === 'Bench Press') inputId = 'benchMax';
+            else if(liftName === 'Deadlift') inputId = 'deadliftMax';
+            else if(liftName === 'Overhead Press') inputId = 'pressMax';
+
+            // Get Reps Input
+            const safeName = liftName.replace(/\s+/g, '');
+            const repInputId = `reps_${safeName}`;
+            const reps = parseFloat(document.getElementById(repInputId).value) || 0;
+
+            if(reps === 0) {
+                alert("Please enter the number of reps you performed.");
+                return;
+            }
+
+            const inputEl = document.getElementById(inputId);
+            const tmPct = parseFloat(document.getElementById('tmPercentage').value) || 0.85;
+
+            // LOGIC FOR WENDLER TM TEST:
+            // If Reps >= 3: You pass. Increase TM by standard amount (2.5/5kg).
+            // We need to reverse engineer the 1RM input so that (Input * pct) = (OldTM + Inc)
+            
+            const isUpper = liftName === 'Bench Press' || liftName === 'Overhead Press';
+            const increment = isUpper ? 2.5 : 5.0;
+
+            if (reps >= 3) {
+                // PASS: Standard Progression
+                // New TM = Old TM + Increment
+                const targetTM = tmWeight + increment;
+                
+                // Calculate required 1RM input to hit this target TM
+                // Input * tmPct = targetTM  =>  Input = targetTM / tmPct
+                const requiredInput = targetTM / tmPct;
+                const roundedInput = mRound(requiredInput, 2.5);
+
+                if(inputEl) {
+                    inputEl.value = roundedInput;
+                    inputEl.classList.add('ring', 'ring-emerald-500');
+                    setTimeout(() => inputEl.classList.remove('ring', 'ring-emerald-500'), 1000);
+                }
+                
+                alert(`TEST PASSED (${reps} Reps)!\n\nStandard progression applied (+${increment}kg to TM).\n\nWhy did the Input Box jump?\nWe set your Input 1RM to ${roundedInput}kg so that when multiplied by ${tmPct*100}%, it equals your NEW Training Max of ${targetTM}kg.\n\nClick RESET above to start the new block.`);
+            
+            } else {
+                // FAIL: Regress
+                // Formula: Estimated 1RM = Weight * (1 + reps/30)
+                const estMax = tmWeight * (1 + reps/30);
+                const roundedMax = mRound(estMax, 2.5);
+                
+                if(inputEl) {
+                    inputEl.value = roundedMax;
+                    inputEl.classList.add('ring', 'ring-red-500');
+                    setTimeout(() => inputEl.classList.remove('ring', 'ring-red-500'), 1000);
+                }
+                alert(`TEST FAILED (< 3 Reps).\n\nYour Training Max was too high. Your 1RM input has been lowered to ${roundedMax}kg based on your performance.\n\nClick RESET above to recalibrate.`);
+            }
+        }
+
         function createWorkoutCard(lift, week) {
             const tm = lift.tm;
+            // HARDCODED ROUNDING TO 2.5 FOR EVERYTHING
             const round = 2.5;
             const is5sPro = state.config.mainLiftStyle === '5s_pro';
             
             // Main Work Logic
             let sets = [];
             let reps = [];
+            let isTmTest = false;
             
             // 7th Week Protocol Handling
             if (week === 4) {
@@ -538,6 +676,7 @@
                 } else if (protocol === 'tm_test') {
                     sets = [0.70, 0.80, 0.90, 1.0];
                     reps = ["5", "5", "5", "3-5 (Test)"];
+                    isTmTest = true;
                 } else {
                     sets = [0.70, 0.80, 0.90, 1.0];
                     reps = ["5", "5", "5", "PR Set"];
@@ -558,15 +697,36 @@
 
             const workSetsHtml = sets.map((pct, idx) => {
                 const weight = fmt(mRound(tm * pct, round));
+                // Only highlight PR set if it IS a PR set (not 5s PRO)
+                const isPr = !is5sPro && idx === 2 && week !== 4;
+                
                 return `
-                    <div class="flex justify-between border-b border-gray-800 pb-1 mb-1 border-transparent rounded px-1">
+                    <div class="flex justify-between border-b border-gray-800 pb-1 mb-1 border-transparent rounded px-1 ${isPr ? 'bg-rose-900/20' : ''}">
                         <span class="text-gray-300">${(pct*100).toFixed(0)}%</span>
                         <span class="font-mono text-gray-400">
                             ${weight}kg x ${reps[idx]}
+                            ${isPr ? '<span class="text-[10px] text-rose-400 font-bold ml-2">PR SET</span>' : ''}
                         </span>
                     </div>
                 `;
             }).join('');
+
+            // TM Test Calculator Injector
+            let calculatorHtml = '';
+            if (isTmTest) {
+                const safeName = lift.name.replace(/\s+/g, '');
+                calculatorHtml = `
+                    <div class="mt-4 p-3 bg-gray-800 border border-blue-900 rounded">
+                        <label class="block text-[10px] text-blue-300 font-bold uppercase mb-1">TM Test Calculator</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="reps_${safeName}" class="w-16 input-dark p-1 text-center text-sm rounded" placeholder="Reps">
+                            <button onclick="calculateNewMax('${lift.name}', ${tm})" class="flex-1 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold rounded">
+                                Update 1RM
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
 
             // Supplemental Logic (Not done on Week 4)
             let supplementalHtml = '';
@@ -621,7 +781,7 @@
             // Updated Forever Assistance (Intelligent Rotation with Leader/Anchor logic)
             let assistanceHtml = '';
             if(week !== 4) {
-                const acc = getAccessories(lift.name, week, lift.type);
+                const acc = getAccessories(lift.name, week);
                 
                 // Determine Total Reps based on Phase
                 const totalReps = state.config.phase === 'leader' ? "25-50" : "50-100";
@@ -652,7 +812,7 @@
                             </div>
                             <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${acc.coreLabel}</span>
+                                    <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${acc.label}</span>
                                     <span>${acc.core.name}</span>
                                 </div>
                                 <div class="font-mono text-gray-400 text-xs">${calcSetsReps(acc.core.reps)}</div>
@@ -670,6 +830,7 @@
                     </div>
                     <div class="space-y-1">
                         ${workSetsHtml}
+                        ${calculatorHtml}
                     </div>
                     ${supplementalHtml}
                     ${assistanceHtml}
