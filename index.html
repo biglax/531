@@ -85,7 +85,7 @@
     <header class="text-center mb-8 max-w-2xl w-full">
         <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
         <p class="text-gray-400 text-sm">Leader/Anchor Programming Logic</p>
-        <p class="text-gray-500 text-xs mt-1">Updated: Clear Math Explanation</p>
+        <p class="text-gray-500 text-xs mt-1">Updated: Auto-Swap Logic for Anchor</p>
     </header>
 
     <!-- Main App Container -->
@@ -171,8 +171,8 @@
                         <label class="block text-gray-300 text-sm font-bold mb-2">Main Lift Style</label>
                         <!-- Added ONCHANGE for instant updates -->
                         <select id="mainLiftStyle" onchange="updateConfig()" class="input-dark w-full p-2 rounded text-sm">
-                            <option value="5s_pro">5's PRO (5 reps all sets, No PR)</option>
-                            <option value="original">Original 5/3/1 (PR Sets)</option>
+                            <option value="5s_pro">5's PRO (Recommended for Leader)</option>
+                            <option value="original">Original 5/3/1 (Recommended for Anchor)</option>
                         </select>
                     </div>
                 </div>
@@ -182,15 +182,15 @@
                         <label class="block text-gray-400 text-xs mb-1">Supplemental Scheme</label>
                         <!-- Added ONCHANGE for instant updates -->
                         <select id="supplemental" onchange="updateConfig()" class="input-dark w-full p-2 rounded text-sm">
-                            <option value="bbb_fsl">Forever BBB - Progressive (FSL %)</option>
-                            <option value="bbb_50">Forever BBB - Static (50%)</option>
-                            <option value="bbb_60">Forever BBB - Static (60%)</option>
+                            <option value="bbb_fsl">Forever BBB - Progressive (Hard)</option>
+                            <option value="bbb_60">Forever BBB - Static 60% (Medium)</option>
+                            <option value="bbb_50">Forever BBB - Static 50% (Standard)</option>
                             <option value="bbs">Boring But Strong (10x5 @ FSL)</option>
                             <option value="ssl">Second Set Last (5x5 @ SSL)</option>
                             <option value="fsl">First Set Last (5x5 @ FSL)</option>
                             <option value="none">None (Main Work Only)</option>
                         </select>
-                        <p class="text-[10px] text-gray-500 mt-1">"Progressive" gets heavier each week. "Static" stays same.</p>
+                        <p id="suppHelper" class="text-[10px] text-gray-500 mt-1">Recommended for 5's PRO: BBB or BBS.</p>
                     </div>
                     <div>
                         <label class="block text-gray-400 text-xs mb-1">Training Max % (Reset Only)</label>
@@ -375,8 +375,15 @@
             // Read inputs
             state.config.mainLiftStyle = document.getElementById('mainLiftStyle').value;
             state.config.supplemental = document.getElementById('supplemental').value;
-            // Note: We deliberately do NOT update TM Percentage here as that requires a recalculation
             
+            // Helper text update for recommendations
+            const helper = document.getElementById('suppHelper');
+            if (state.config.mainLiftStyle === '5s_pro') {
+                helper.innerText = "Recommended for 5's PRO: BBB or BBS (High Volume).";
+            } else {
+                helper.innerText = "Recommended for Original 5/3/1: FSL or SSL (Lower Volume).";
+            }
+
             // Refresh View
             const activeTab = document.querySelector('.tab-active') ? document.querySelector('.tab-active').id.replace('tab', '') : 1;
             renderWeek(parseInt(activeTab));
@@ -407,7 +414,7 @@
                 phaseDesc.innerText = "Lower volume, higher intensity (PR Sets). Realize strength. Recommend FSL.";
                 
                 // Set Recommended Defaults for Anchor
-                mainLiftSelect.value = 'original';
+                mainLiftSelect.value = 'original'; // AUTO SWAP TO ORIGINAL
                 suppSelect.value = 'fsl'; 
             }
             
