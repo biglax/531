@@ -85,7 +85,7 @@
     <header class="text-center mb-8 max-w-2xl w-full">
         <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
         <p class="text-gray-400 text-sm">Leader/Anchor Programming Logic</p>
-        <p class="text-gray-500 text-xs mt-1">Updated: Auto-Swap Logic for Anchor</p>
+        <p class="text-gray-500 text-xs mt-1">Updated: Advanced Circuit Logic for Anchor</p>
     </header>
 
     <!-- Main App Container -->
@@ -303,70 +303,57 @@
             }
         };
 
-        // Accessory Exercise Database
-        // Organized by Goal/Day to optimize split
+        // CUSTOMIZED ACCESSORY EXERCISE DATABASE (User Defined)
+        // Leader: Standard 3x15 lists
+        // Anchor: Circuits A (5x10) and B (3x15)
         const accessories = {
+            // SQUAT DAY
             squatDay: {
-                push: [
-                    { name: "Tricep Pushdowns", reps: "3 x 15-20" },
-                    { name: "Overhead Tricep Ext", reps: "3 x 12-15" },
-                    { name: "Skullcrushers", reps: "3 x 10-12" }
-                ],
-                pull: [
-                    { name: "Chin-ups / Pull-ups", reps: "3 x 5-10" },
-                    { name: "Lat Pulldowns", reps: "3 x 10-12" }
-                ],
-                core: [
-                    { name: "Hanging Leg Raises", reps: "3 x 10-15" },
-                    { name: "Toes to Bar", reps: "3 x 8-10" },
-                    { name: "Lying Leg Raises", reps: "3 x 15-20" }
-                ]
+                leader: {
+                    push: ["Tricep Pushdowns"],
+                    pull: ["Face Pulls"],
+                    core: ["Hanging Leg Raises", "Weighted Cable Crunches"]
+                },
+                anchor: {
+                    circuitA: { push: "Push-ups", pull: "Lat Pulldowns", core: "Hanging Leg Raises" },
+                    circuitB: { push: "Tricep Pushdowns", pull: "Face Pulls", core: "Weighted Cable Crunches" }
+                }
             },
+            // BENCH DAY
             benchDay: {
-                push: [
-                    { name: "Close Grip Bench", reps: "3 x 8-10" },
-                    { name: "DB Incline Press", reps: "3 x 10-12" },
-                    { name: "Push-ups", reps: "3 x AMRAP" }
-                ],
-                pull: [
-                    { name: "DB Rows", reps: "3 x 10-15" },
-                    { name: "Chest Supported Rows", reps: "3 x 10-12" },
-                    { name: "Cable Rows", reps: "3 x 12-15" }
-                ],
-                core: [
-                    { name: "Bulgarian Split Squats", reps: "3 x 8-10 leg" },
-                    { name: "Walking Lunges", reps: "3 x 20 steps" },
-                    { name: "Reverse Lunges", reps: "3 x 10 leg" }
-                ]
+                leader: {
+                    push: ["DB Incline Press", "Dips"],
+                    pull: ["Seated Cable Rows"],
+                    core: ["Weighted Cable Crunches", "Plate Crunches"]
+                },
+                anchor: {
+                    circuitA: { push: "DB Incline Press", pull: "Seated Cable Rows", core: "Walking Lunges" },
+                    circuitB: { push: "Tricep Extensions", pull: "Rear Delt Flies", core: "Plate Crunches" }
+                }
             },
+            // DEADLIFT DAY
             deadliftDay: {
-                push: [
-                    { name: "Push-ups", reps: "3 x AMRAP" },
-                    { name: "DB Floor Press", reps: "3 x 10-12" }
-                ],
-                pull: [
-                    { name: "Face Pulls", reps: "3 x 20" },
-                    { name: "Band Pull-Aparts", reps: "3 x 25" }
-                ],
-                core: [
-                    { name: "Planks", reps: "3 x 60s" },
-                    { name: "Side Planks", reps: "3 x 30s side" },
-                    { name: "Ab Wheel Rollouts", reps: "3 x 10-12" }
-                ]
+                leader: {
+                    push: ["Pushups"],
+                    pull: ["Seated Machine Rows"],
+                    core: ["Hanging Leg Raises"]
+                },
+                anchor: {
+                    circuitA: { push: "Dips", pull: "Seated Machine Rows", core: "Hanging Leg Raises" },
+                    circuitB: { push: "Push-ups", pull: "Band Pull-Aparts", core: "Weighted Side Bends" }
+                }
             },
+            // PRESS DAY
             pressDay: {
-                push: [
-                    { name: "Dips (Weighted or BW)", reps: "3 x 10-15" }
-                ],
-                pull: [
-                    { name: "Lat Pulldowns", reps: "3 x 10-12" },
-                    { name: "Chin-ups", reps: "3 x AMRAP" }
-                ],
-                core: [
-                    { name: "Back Extensions", reps: "3 x 15" },
-                    { name: "Kettlebell Swings", reps: "3 x 15-20" },
-                    { name: "Step Ups", reps: "3 x 10 leg" }
-                ]
+                leader: {
+                    push: ["Flies"],
+                    pull: ["Lat Pulldowns"],
+                    core: ["Weighted Cable Crunches", "Hanging Leg Raises"]
+                },
+                anchor: {
+                    circuitA: { push: "DB Bench Press", pull: "Lat Pulldowns", core: "Weighted Cable Crunches" },
+                    circuitB: { push: "Flies", pull: "Reverse Cable Flies", core: "Back Extensions" }
+                }
             }
         };
 
@@ -415,7 +402,7 @@
                 
                 // Set Recommended Defaults for Anchor
                 mainLiftSelect.value = 'original'; // AUTO SWAP TO ORIGINAL
-                suppSelect.value = 'fsl'; 
+                suppSelect.value = 'fsl'; // AUTO SWAP TO FSL
             }
             
             // Trigger config update to apply these new defaults
@@ -555,21 +542,39 @@
             renderWeek(weekNum);
         }
 
-        // Helper: Day-Aware Accessory Selection
+        // Helper: User-Customized Accessory Selection
         function getAccessories(liftName, weekNum) {
-            const seed = (state.cycle * 13) + (weekNum * 7) + liftName.length;
+            const isAnchor = state.config.phase === 'anchor';
+            
+            // Map lift name to accessory key
+            let key = '';
+            if(liftName === 'Squat') key = 'squatDay';
+            else if(liftName === 'Bench Press') key = 'benchDay';
+            else if(liftName === 'Deadlift') key = 'deadliftDay';
+            else key = 'pressDay';
 
-            let pool;
-            if(liftName === 'Squat') pool = accessories.squatDay;
-            else if(liftName === 'Bench Press') pool = accessories.benchDay;
-            else if(liftName === 'Deadlift') pool = accessories.deadliftDay;
-            else pool = accessories.pressDay;
+            const pool = accessories[key];
 
-            // Pick based on seed
+            if (isAnchor) {
+                return {
+                    isAnchor: true,
+                    circuitA: pool.anchor.circuitA,
+                    circuitB: pool.anchor.circuitB
+                };
+            }
+
+            // LEADER LOGIC: Rotation
+            const idx = (weekNum + state.cycle) % 2; 
+            const pick = (arr) => {
+                if (arr.length === 1) return arr[0];
+                return arr[idx % arr.length];
+            };
+
             return {
-                push: pool.push[seed % pool.push.length],
-                pull: pool.pull[(seed + 1) % pool.pull.length],
-                core: pool.core[(seed + 2) % pool.core.length],
+                isAnchor: false,
+                push: pick(pool.leader.push),
+                pull: pick(pool.leader.pull),
+                core: pick(pool.leader.core),
                 label: (liftName === 'Bench Press' || liftName === 'Overhead Press') ? 'LEG/CORE' : 'ABS/CORE'
             };
         }
@@ -790,43 +795,62 @@
             if(week !== 4) {
                 const acc = getAccessories(lift.name, week);
                 
-                // Determine Total Reps based on Phase
-                const totalReps = state.config.phase === 'leader' ? "25-50" : "50-100";
-                
-                // Calculate Sets x Reps based on totalReps target
-                const calcSetsReps = (range) => {
-                    if (state.config.phase === 'leader') return "3 x 10-15"; // Conservative for Leader
-                    return "5 x 10-20"; // Aggressive for Anchor
-                };
-
-                assistanceHtml = `
+                if (acc.isAnchor) {
+                    assistanceHtml = `
                     <div class="mt-4 pt-2 border-t border-gray-700">
-                        <div class="text-xs text-blue-400 font-bold uppercase mb-2">Accessory Work (${totalReps} reps total)</div>
+                        <div class="text-xs text-blue-400 font-bold uppercase mb-2">Anchor Circuits (50-100 Reps)</div>
+                        
+                        <!-- Circuit A -->
+                        <div class="mb-3">
+                            <div class="text-[10px] font-bold text-yellow-500 uppercase mb-1">Circuit A (5 Rounds x 10 Reps)</div>
+                            <div class="space-y-1 text-sm text-gray-300 pl-2 border-l-2 border-yellow-500/30">
+                                <div class="flex justify-between"><span class="text-gray-400">Push</span> <span>${acc.circuitA.push}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Pull</span> <span>${acc.circuitA.pull}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Core</span> <span>${acc.circuitA.core}</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Circuit B -->
+                        <div>
+                            <div class="text-[10px] font-bold text-purple-500 uppercase mb-1">Circuit B (3 Rounds x 15 Reps)</div>
+                            <div class="space-y-1 text-sm text-gray-300 pl-2 border-l-2 border-purple-500/30">
+                                <div class="flex justify-between"><span class="text-gray-400">Push</span> <span>${acc.circuitB.push}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Pull</span> <span>${acc.circuitB.pull}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Core</span> <span>${acc.circuitB.core}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                } else {
+                    assistanceHtml = `
+                    <div class="mt-4 pt-2 border-t border-gray-700">
+                        <div class="text-xs text-blue-400 font-bold uppercase mb-2">Accessory Work (25-50 Reps - Isolation Focus)</div>
                         <div class="space-y-2 text-sm text-gray-300">
                             <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PUSH</span>
-                                    <span>${acc.push.name}</span>
+                                    <span>${acc.push}</span>
                                 </div>
-                                <div class="font-mono text-gray-400 text-xs">${calcSetsReps(acc.push.reps)}</div>
+                                <div class="font-mono text-gray-400 text-xs text-right">3 x 15<br><span class="text-[9px] text-gray-500">RPE 7-9</span></div>
                             </div>
                             <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PULL</span>
-                                    <span>${acc.pull.name}</span>
+                                    <span>${acc.pull}</span>
                                 </div>
-                                <div class="font-mono text-gray-400 text-xs">${calcSetsReps(acc.pull.reps)}</div>
+                                <div class="font-mono text-gray-400 text-xs text-right">3 x 15<br><span class="text-[9px] text-gray-500">RPE 7-9</span></div>
                             </div>
                             <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${acc.label}</span>
-                                    <span>${acc.core.name}</span>
+                                    <span>${acc.core}</span>
                                 </div>
-                                <div class="font-mono text-gray-400 text-xs">${calcSetsReps(acc.core.reps)}</div>
+                                <div class="font-mono text-gray-400 text-xs text-right">3 x 15<br><span class="text-[9px] text-gray-500">RPE 7-9</span></div>
                             </div>
                         </div>
                     </div>
-                `;
+                    `;
+                }
             }
 
             return `
