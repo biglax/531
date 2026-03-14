@@ -85,7 +85,7 @@
     <header class="text-center mb-8 max-w-2xl w-full">
         <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
         <p class="text-gray-400 text-sm">Leader/Anchor Programming Logic</p>
-        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: Strict 5-Rep TM Test Rules & Decoupled Progression</p>
+        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: Strict 5-Rep TM Test Rules & 1RM Export</p>
     </header>
 
     <!-- Main App Container -->
@@ -134,8 +134,8 @@
                     <ul class="list-disc pl-4 space-y-1">
                         <li><strong>Step 9:</strong> Click <span class="text-emerald-400 font-bold">"Complete Cycle (+kg)"</span>.</li>
                         <li><strong>Step 10:</strong> Go to "7th Week Protocol" tab. Select <strong>"TM Test"</strong>.</li>
-                        <li><strong>Step 11:</strong> Perform your test. Enter your reps. The app will calculate your EXACT new TM based on performance.</li>
-                        <li><strong>Step 12:</strong> Switch back to <strong>"Leader"</strong> and click the gray <span class="font-bold">"Start New Block (Cycle 1)"</span> button in the workout UI.</li>
+                        <li><strong>Step 11:</strong> Perform your test. Enter your reps. The app will calculate your EXACT new TM based on performance AND update your true 1RM box.</li>
+                        <li><strong>Step 12:</strong> Record your new True 1RM, switch back to <strong>"Leader"</strong> and click the gray <span class="font-bold">"Start New Block (Cycle 1)"</span> button.</li>
                     </ul>
                 </div>
             </div>
@@ -517,13 +517,15 @@
             };
         }
 
-        // NEW STRICT TM TEST LOGIC
+        // NEW STRICT TM TEST LOGIC WITH 1RM EXPORT
         window.calculateNewMax = function(liftName, tmWeight) {
             let stateKey = '';
-            if(liftName === 'Squat') stateKey = 'squat';
-            else if(liftName === 'Bench Press') stateKey = 'bench';
-            else if(liftName === 'Deadlift') stateKey = 'deadlift';
-            else if(liftName === 'Overhead Press') stateKey = 'press';
+            let inputId = '';
+            
+            if(liftName === 'Squat') { stateKey = 'squat'; inputId = 'squatMax'; }
+            else if(liftName === 'Bench Press') { stateKey = 'bench'; inputId = 'benchMax'; }
+            else if(liftName === 'Deadlift') { stateKey = 'deadlift'; inputId = 'deadliftMax'; }
+            else if(liftName === 'Overhead Press') { stateKey = 'press'; inputId = 'pressMax'; }
 
             const safeName = liftName.replace(/\s+/g, '');
             const repInputId = `reps_${safeName}`;
@@ -539,23 +541,34 @@
             const increment = isUpper ? 2.5 : 5.0;
 
             let newTM = 0;
+            let new1RM = 0;
             let msg = "";
 
             if (reps >= 5) {
                 // WENDLER RULE: 5 Strong Reps required for 85% TM increase
                 newTM = tmWeight + increment;
-                msg = `STRONG PASS (${reps} Reps)!\n\nStandard progression applied (+${increment}kg).\nYour NEW ${liftName} TM is ${newTM}kg.`;
+                new1RM = mRound(newTM / tmPct, 2.5); // Calculate the implied 1RM for stateless workflow
+                msg = `STRONG PASS (${reps} Reps)!\n\nStandard progression applied (+${increment}kg).\nYour NEW ${liftName} TM is ${newTM}kg.\n\nWe've also updated your 'True 1RM' box at the top to ${new1RM}kg so you can easily save it for your next visit!`;
             } else {
                 // FAIL/CALIBRATION: Calculate true max and take 85%
                 const estMax = tmWeight * (1 + reps/30);
-                newTM = mRound(estMax * tmPct, 2.5);
-                msg = `CALIBRATION REQUIRED (${reps} Reps)\n\nWendler rule: An 85% TM must be a weight you can hit for 5 strong reps. Since you hit ${reps}, your TM was too heavy.\n\nEstimated 1RM: ${fmt(mRound(estMax,2.5))}kg\nNEW ${tmPct*100}% TM: ${newTM}kg\n\nWe have automatically lowered your TM to the correct weight so you don't stall.`;
+                new1RM = mRound(estMax, 2.5);
+                newTM = mRound(new1RM * tmPct, 2.5);
+                msg = `CALIBRATION REQUIRED (${reps} Reps)\n\nWendler rule: An 85% TM must be a weight you can hit for 5 strong reps. Since you hit ${reps}, your TM was too heavy.\n\nEstimated 1RM: ${new1RM}kg\nNEW ${tmPct*100}% TM: ${newTM}kg\n\nWe've lowered your TM to the correct weight and updated your 'True 1RM' box to ${new1RM}kg. Save this for your next visit!`;
             }
 
             // Update State Directly (Decoupled from 1RM inputs!)
             state.tm[stateKey] = newTM;
             
-            // Visual Updates
+            // Update the Top True 1RM box for the user's stateless workflow
+            const true1RmInput = document.getElementById(inputId);
+            if(true1RmInput) {
+                true1RmInput.value = new1RM;
+                true1RmInput.classList.add('ring', 'ring-blue-500');
+                setTimeout(() => true1RmInput.classList.remove('ring', 'ring-blue-500'), 1500);
+            }
+            
+            // Visual Updates for TM Boxes
             updateTMDisplay();
             const inputEl = document.getElementById(`manualTm${stateKey.charAt(0).toUpperCase() + stateKey.slice(1)}`);
             if(inputEl) {
@@ -563,7 +576,7 @@
                 setTimeout(() => inputEl.classList.remove('ring', 'ring-emerald-500', 'ring-yellow-500'), 1500);
             }
             
-            alert(msg + "\n\n(Remember to click 'Start New Block' at the top when you finish all your tests!)");
+            alert(msg);
         }
 
         function renderWeek(week) {
