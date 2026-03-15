@@ -85,7 +85,7 @@
     <header class="text-center mb-8 max-w-2xl w-full">
         <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
         <p class="text-gray-400 text-sm">Leader/Anchor Programming Logic</p>
-        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: Strict 5-Rep TM Test Rules & 1RM Export</p>
+        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: LocalStorage Persistence & Syntax Fixes</p>
     </header>
 
     <!-- Main App Container -->
@@ -201,19 +201,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="space-y-1">
                     <label class="text-xs font-semibold text-gray-400 uppercase">Squat True 1RM</label>
-                    <input type="number" id="squatMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                    <input type="number" id="squatMax" onchange="updateTrue1RM('squat')" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-semibold text-gray-400 uppercase">Bench True 1RM</label>
-                    <input type="number" id="benchMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                    <input type="number" id="benchMax" onchange="updateTrue1RM('bench')" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-semibold text-gray-400 uppercase">Deadlift True 1RM</label>
-                    <input type="number" id="deadliftMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                    <input type="number" id="deadliftMax" onchange="updateTrue1RM('deadlift')" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-semibold text-gray-400 uppercase">Press True 1RM</label>
-                    <input type="number" id="pressMax" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
+                    <input type="number" id="pressMax" onchange="updateTrue1RM('press')" class="input-dark w-full p-3 rounded text-center text-lg font-bold" placeholder="0">
                 </div>
             </div>
 
@@ -295,14 +295,16 @@
 
     </main>
 
-    <footer class="mt-12 text-center text-gray-600 text-xs">
+    <footer class="mt-12 text-center text-gray-600 text-xs pb-12">
         <p>AI Generated Coach based on Jim Wendler's "5/3/1 Forever".</p>
+        <button onclick="clearSaveData()" class="mt-4 text-gray-500 hover:text-red-400 underline text-[10px] transition-colors">Wipe Save Data & Restart</button>
     </footer>
 
     <script>
-        // Global State
+        // Global State (Now includes true1RM for persistence)
         let state = {
             cycle: 1,
+            true1RM: { squat: 0, bench: 0, deadlift: 0, press: 0 },
             tm: { squat: 0, bench: 0, deadlift: 0, press: 0 },
             config: {
                 rounding: 2.5,
@@ -333,6 +335,47 @@
             }
         };
 
+        // --- LOCAL STORAGE FUNCTIONS ---
+        function saveState() {
+            localStorage.setItem('531_forever_state', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('531_forever_state');
+            if (saved) {
+                state = JSON.parse(saved);
+                
+                // Restore Config UI
+                document.getElementById('tmPercentage').value = state.config.tmPercentage;
+                document.getElementById('mainLiftStyle').value = state.config.mainLiftStyle;
+                document.getElementById('supplemental').value = state.config.supplemental;
+                setPhase(state.config.phase, true); // true = skip save inside setPhase
+                
+                // Restore True 1RMs to inputs
+                document.getElementById('squatMax').value = state.true1RM.squat || '';
+                document.getElementById('benchMax').value = state.true1RM.bench || '';
+                document.getElementById('deadliftMax').value = state.true1RM.deadlift || '';
+                document.getElementById('pressMax').value = state.true1RM.press || '';
+
+                // If TM is > 0, we have an active program running
+                if (state.tm.squat > 0 || state.tm.bench > 0) {
+                    updateTMDisplay();
+                    document.getElementById('programSection').classList.remove('hidden');
+                    switchWeek(1); // Default back to week 1 on reload
+                }
+            }
+        }
+
+        function clearSaveData() {
+            if(confirm("Are you sure you want to completely wipe all saved program data?")) {
+                localStorage.removeItem('531_forever_state');
+                location.reload();
+            }
+        }
+
+        window.onload = loadState;
+        // --------------------------------
+
         function updateConfig() {
             state.config.mainLiftStyle = document.getElementById('mainLiftStyle').value;
             state.config.supplemental = document.getElementById('supplemental').value;
@@ -344,11 +387,12 @@
                 helper.innerText = "Recommended for Original 5/3/1: FSL or SSL (Lower Volume).";
             }
 
-            const activeTab = document.querySelector('.tab-active') ? document.querySelector('.tab-active').id.replace('tab', '') : 1;
+            const activeTab = document.querySelector('.tab-active') ? document.querySelector('.tab-active').id.replace('tab', '') : "1";
             renderWeek(parseInt(activeTab));
+            saveState();
         }
 
-        function setPhase(phase) {
+        function setPhase(phase, skipSave = false) {
             state.config.phase = phase;
             const btnLeader = document.getElementById('btnLeader');
             const btnAnchor = document.getElementById('btnAnchor');
@@ -360,17 +404,19 @@
                 btnLeader.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors bg-emerald-700 text-white';
                 btnAnchor.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors text-gray-400 hover:text-white';
                 phaseDesc.innerText = "Higher volume, lower intensity. Build the base. Recommend 5's PRO.";
-                mainLiftSelect.value = '5s_pro';
-                suppSelect.value = 'bbb_fsl'; 
+                if(!skipSave) { mainLiftSelect.value = '5s_pro'; suppSelect.value = 'bbb_fsl'; }
             } else {
                 btnAnchor.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors bg-rose-700 text-white';
                 btnLeader.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors text-gray-400 hover:text-white';
                 phaseDesc.innerText = "Lower volume, higher intensity (PR Sets). Realize strength. Recommend FSL.";
-                mainLiftSelect.value = 'original'; 
-                suppSelect.value = 'fsl'; 
+                if(!skipSave) { mainLiftSelect.value = 'original'; suppSelect.value = 'fsl'; }
             }
-            updateConfig();
-            updateTMDisplay();
+            
+            if(!skipSave) {
+                updateConfig();
+                updateTMDisplay();
+                saveState();
+            }
         }
 
         function mRound(weight, increment) {
@@ -381,22 +427,29 @@
             return weight % 1 === 0 ? weight : weight.toFixed(1);
         }
 
+        // Keep state tracking of manually updated 1RMs
+        function updateTrue1RM(lift) {
+            const val = parseFloat(document.getElementById(lift + 'Max').value) || 0;
+            state.true1RM[lift] = val;
+            saveState();
+        }
+
         // GENERATE INITIAL TMS (Run Once)
         function generateProgram() {
             state.cycle = 1;
             
-            const sq1RM = parseFloat(document.getElementById('squatMax').value) || 0;
-            const bp1RM = parseFloat(document.getElementById('benchMax').value) || 0;
-            const dl1RM = parseFloat(document.getElementById('deadliftMax').value) || 0;
-            const ohp1RM = parseFloat(document.getElementById('pressMax').value) || 0;
+            state.true1RM.squat = parseFloat(document.getElementById('squatMax').value) || 0;
+            state.true1RM.bench = parseFloat(document.getElementById('benchMax').value) || 0;
+            state.true1RM.deadlift = parseFloat(document.getElementById('deadliftMax').value) || 0;
+            state.true1RM.press = parseFloat(document.getElementById('pressMax').value) || 0;
 
             state.config.tmPercentage = parseFloat(document.getElementById('tmPercentage').value);
             updateConfig(); 
 
-            state.tm.squat = mRound(sq1RM * state.config.tmPercentage, 2.5);
-            state.tm.bench = mRound(bp1RM * state.config.tmPercentage, 2.5);
-            state.tm.deadlift = mRound(dl1RM * state.config.tmPercentage, 2.5);
-            state.tm.press = mRound(ohp1RM * state.config.tmPercentage, 2.5);
+            state.tm.squat = mRound(state.true1RM.squat * state.config.tmPercentage, 2.5);
+            state.tm.bench = mRound(state.true1RM.bench * state.config.tmPercentage, 2.5);
+            state.tm.deadlift = mRound(state.true1RM.deadlift * state.config.tmPercentage, 2.5);
+            state.tm.press = mRound(state.true1RM.press * state.config.tmPercentage, 2.5);
 
             if (state.tm.squat === 0 && state.tm.bench === 0 && state.tm.deadlift === 0) {
                 alert("Please enter at least one 1RM.");
@@ -407,6 +460,7 @@
             programSection.classList.remove('hidden');
             switchWeek(1);
             programSection.scrollIntoView({ behavior: 'smooth' });
+            saveState();
         }
 
         // START NEW BLOCK (Decoupled Reset)
@@ -416,16 +470,21 @@
                 updateTMDisplay();
                 switchWeek(1);
                 alert("New Block Started! Cycle reset to 1.");
+                saveState();
             }
         }
 
         // MANUAL TM OVERRIDES
         function manualTmUpdate(lift) {
-            const newVal = parseFloat(document.getElementById(`manualTm${lift.charAt(0).toUpperCase() + lift.slice(1)}`).value) || 0;
+            // Using strict string concatenation to avoid template literal bugs
+            const elementId = 'manualTm' + lift.charAt(0).toUpperCase() + lift.slice(1);
+            const newVal = parseFloat(document.getElementById(elementId).value) || 0;
+            
             if(newVal > 0) {
                 state.tm[lift] = newVal;
-                const activeTab = document.querySelector('.tab-active') ? document.querySelector('.tab-active').id.replace('tab', '') : 1;
+                const activeTab = document.querySelector('.tab-active') ? document.querySelector('.tab-active').id.replace('tab', '') : "1";
                 renderWeek(parseInt(activeTab));
+                saveState();
             }
         }
 
@@ -456,6 +515,7 @@
 
             updateTMDisplay();
             switchWeek(1);
+            saveState();
 
             const btn = document.getElementById('nextCycleBtn');
             const originalText = `Complete Cycle (+kg) <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>`;
@@ -471,7 +531,9 @@
 
         function switchWeek(weekNum) {
             [1,2,3,4].forEach(n => {
-                const btn = document.getElementById(`tab${n}`);
+                // Strict string concatenation
+                const btnId = 'tab' + n;
+                const btn = document.getElementById(btnId);
                 if(n === weekNum) {
                     btn.classList.remove('tab-inactive');
                     btn.classList.add('tab-active');
@@ -489,6 +551,7 @@
             }
 
             renderWeek(weekNum);
+            // Don't need to save state just for switching tabs
         }
 
         function getAccessories(liftName, weekNum) {
@@ -528,7 +591,7 @@
             else if(liftName === 'Overhead Press') { stateKey = 'press'; inputId = 'pressMax'; }
 
             const safeName = liftName.replace(/\s+/g, '');
-            const repInputId = `reps_${safeName}`;
+            const repInputId = 'reps_' + safeName; // String concat
             const reps = parseFloat(document.getElementById(repInputId).value) || 0;
 
             if(reps === 0) {
@@ -559,8 +622,9 @@
 
             // Update State Directly (Decoupled from 1RM inputs!)
             state.tm[stateKey] = newTM;
+            state.true1RM[stateKey] = new1RM;
             
-            // Update the Top True 1RM box for the user's stateless workflow
+            // Update the Top True 1RM box
             const true1RmInput = document.getElementById(inputId);
             if(true1RmInput) {
                 true1RmInput.value = new1RM;
@@ -570,12 +634,17 @@
             
             // Visual Updates for TM Boxes
             updateTMDisplay();
-            const inputEl = document.getElementById(`manualTm${stateKey.charAt(0).toUpperCase() + stateKey.slice(1)}`);
+            
+            // Strict string concatenation
+            const manualTmId = 'manualTm' + stateKey.charAt(0).toUpperCase() + stateKey.slice(1);
+            const inputEl = document.getElementById(manualTmId);
+            
             if(inputEl) {
                 inputEl.classList.add('ring', reps >= 5 ? 'ring-emerald-500' : 'ring-yellow-500');
                 setTimeout(() => inputEl.classList.remove('ring', 'ring-emerald-500', 'ring-yellow-500'), 1500);
             }
             
+            saveState(); // Save all these updates
             alert(msg);
         }
 
@@ -640,11 +709,12 @@
             let calculatorHtml = '';
             if (isTmTest) {
                 const safeName = lift.name.replace(/\s+/g, '');
+                const repId = 'reps_' + safeName; // String concat
                 calculatorHtml = `
                     <div class="mt-4 p-3 bg-gray-800 border border-blue-900 rounded">
                         <label class="block text-[10px] text-blue-300 font-bold uppercase mb-1">TM Test Calculator</label>
                         <div class="flex gap-2">
-                            <input type="number" id="reps_${safeName}" class="w-16 input-dark p-1 text-center text-sm rounded" placeholder="Reps">
+                            <input type="number" id="${repId}" class="w-16 input-dark p-1 text-center text-sm rounded" placeholder="Reps">
                             <button onclick="calculateNewMax('${lift.name}', ${tm})" class="flex-1 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold rounded">
                                 Update TM
                             </button>
