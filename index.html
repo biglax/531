@@ -245,7 +245,7 @@
                         </div>
                         <div class="flex items-center gap-1">
                             <span class="text-xs uppercase text-gray-500">DL TM:</span>
-                            <input type="number" id="manualTmDead" onchange="manualTmUpdate('deadlift')" class="w-16 bg-gray-900 border border-gray-600 rounded px-1 py-0.5 text-rose-400 font-bold text-center text-sm" />
+                            <input type="number" id="manualTmDeadlift" onchange="manualTmUpdate('deadlift')" class="w-16 bg-gray-900 border border-gray-600 rounded px-1 py-0.5 text-rose-400 font-bold text-center text-sm" />
                         </div>
                         <div class="flex items-center gap-1">
                             <span class="text-xs uppercase text-gray-500">OHP TM:</span>
@@ -502,7 +502,7 @@
             // Update Input Boxes Directly
             document.getElementById('manualTmSquat').value = fmt(state.tm.squat);
             document.getElementById('manualTmBench').value = fmt(state.tm.bench);
-            document.getElementById('manualTmDead').value = fmt(state.tm.deadlift);
+            document.getElementById('manualTmDeadlift').value = fmt(state.tm.deadlift);
             document.getElementById('manualTmPress').value = fmt(state.tm.press);
         }
 
