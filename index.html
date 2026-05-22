@@ -592,10 +592,17 @@
 
             const safeName = liftName.replace(/\s+/g, '');
             const repInputId = 'reps_' + safeName; // String concat
-            const reps = parseFloat(document.getElementById(repInputId).value) || 0;
-
-            if(reps === 0) {
+            
+            // FIXED 0-REP BUG: Read as raw string first to allow '0' as a valid input
+            const rawVal = document.getElementById(repInputId).value;
+            if(rawVal.trim() === '') {
                 alert("Please enter the number of reps you performed.");
+                return;
+            }
+
+            const reps = parseFloat(rawVal);
+            if(reps < 0) {
+                alert("Reps cannot be negative.");
                 return;
             }
 
@@ -614,7 +621,18 @@
                 msg = `STRONG PASS (${reps} Reps)!\n\nStandard progression applied (+${increment}kg).\nYour NEW ${liftName} TM is ${newTM}kg.\n\nWe've also updated your 'True 1RM' box at the top to ${new1RM}kg so you can easily save it for your next visit!`;
             } else {
                 // FAIL/CALIBRATION: Calculate true max and take 85%
-                const estMax = tmWeight * (1 + reps/30);
+                let estMax = 0;
+                if (reps === 0) {
+                    // If you failed to lift it even once, your max is significantly lower.
+                    estMax = tmWeight * 0.90; 
+                } else if (reps === 1) {
+                    // If you lifted it exactly once, the TM is your absolute 1RM.
+                    estMax = tmWeight;
+                } else {
+                    // Reps 2, 3, or 4
+                    estMax = tmWeight * (1 + reps/30);
+                }
+                
                 new1RM = mRound(estMax, 2.5);
                 newTM = mRound(new1RM * tmPct, 2.5);
                 msg = `CALIBRATION REQUIRED (${reps} Reps)\n\nWendler rule: An 85% TM must be a weight you can hit for 5 strong reps. Since you hit ${reps}, your TM was too heavy.\n\nEstimated 1RM: ${new1RM}kg\nNEW ${tmPct*100}% TM: ${newTM}kg\n\nWe've lowered your TM to the correct weight and updated your 'True 1RM' box to ${new1RM}kg. Save this for your next visit!`;
