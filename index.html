@@ -84,8 +84,8 @@
     <!-- Header -->
     <header class="text-center mb-8 max-w-2xl w-full">
         <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
-        <p class="text-gray-400 text-sm">Leader/Anchor Programming Logic</p>
-        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: LocalStorage Persistence & Syntax Fixes</p>
+        <p class="text-gray-400 text-sm">Powerbuilding Logic (Strict Tempo)</p>
+        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: FSL & Consolidated Machine Block</p>
     </header>
 
     <!-- Main App Container -->
@@ -178,15 +178,15 @@
                     <div>
                         <label class="block text-gray-400 text-xs mb-1">Supplemental Scheme</label>
                         <select id="supplemental" onchange="updateConfig()" class="input-dark w-full p-2 rounded text-sm">
+                            <option value="fsl" selected>First Set Last (5x5 @ FSL)</option>
                             <option value="bbb_fsl">Forever BBB - Progressive (Hard)</option>
                             <option value="bbb_60">Forever BBB - Static 60% (Medium)</option>
                             <option value="bbb_50">Forever BBB - Static 50% (Standard)</option>
                             <option value="bbs">Boring But Strong (10x5 @ FSL)</option>
                             <option value="ssl">Second Set Last (5x5 @ SSL)</option>
-                            <option value="fsl">First Set Last (5x5 @ FSL)</option>
                             <option value="none">None (Main Work Only)</option>
                         </select>
-                        <p id="suppHelper" class="text-[10px] text-gray-500 mt-1">Recommended for 5's PRO: BBB or BBS.</p>
+                        <p id="suppHelper" class="text-[10px] text-gray-500 mt-1">Default set to FSL 5x5 for Powerbuilding / Cut phase.</p>
                     </div>
                     <div>
                         <label class="block text-gray-400 text-xs mb-1">Training Max % (Reset Only)</label>
@@ -311,27 +311,27 @@
                 tmPercentage: 0.85,
                 phase: 'leader',
                 mainLiftStyle: '5s_pro',
-                supplemental: 'bbb_fsl',
+                supplemental: 'fsl',
                 protocol7: 'deload'
             }
         };
 
         const accessories = {
             squatDay: {
-                leader: { push: ["Tricep Pushdowns"], pull: ["Face Pulls"], core: ["Hanging Leg Raises", "Weighted Cable Crunches"] },
-                anchor: { circuitA: { push: "Push-ups", pull: "Lat Pulldowns", core: "Hanging Leg Raises" }, circuitB: { push: "Tricep Pushdowns", pull: "Face Pulls", core: "Weighted Cable Crunches" } }
+                leader: { m1: "Leg Press (3s negative)", m2: "Leg Extensions (90s rest)", m3: "Cable Crunches (3s negative)" },
+                anchor: { m1: "Leg Press (3s negative)", m2: "Leg Extensions (90s rest)", m3: "Cable Crunches (3s negative)" }
             },
             benchDay: {
-                leader: { push: ["DB Incline Press", "Dips"], pull: ["Seated Cable Rows"], core: ["Weighted Cable Crunches", "Plate Crunches"] },
-                anchor: { circuitA: { push: "DB Incline Press", pull: "Seated Cable Rows", core: "Walking Lunges" }, circuitB: { push: "Tricep Extensions", pull: "Rear Delt Flies", core: "Plate Crunches" } }
+                leader: { m1: "DB Incline Press (3s negative)", m2: "Cable Pec Flyes (3s stretch)", m3: "Tricep Pushdowns (3s negative)" },
+                anchor: { m1: "DB Incline Press (3s negative)", m2: "Cable Pec Flyes (3s stretch)", m3: "Tricep Pushdowns (3s negative)" }
             },
             deadliftDay: {
-                leader: { push: ["Pushups"], pull: ["Seated Machine Rows"], core: ["Hanging Leg Raises"] },
-                anchor: { circuitA: { push: "Dips", pull: "Seated Machine Rows", core: "Hanging Leg Raises" }, circuitB: { push: "Push-ups", pull: "Band Pull-Aparts", core: "Weighted Side Bends" } }
+                leader: { m1: "Seated Ham Curls (3s negative)", m2: "Lat Pulldowns (3s negative)", m3: "Seated Cable Rows (Thumbless)" },
+                anchor: { m1: "Seated Ham Curls (3s negative)", m2: "Lat Pulldowns (3s negative)", m3: "Seated Cable Rows (Thumbless)" }
             },
             pressDay: {
-                leader: { push: ["Flies"], pull: ["Lat Pulldowns"], core: ["Weighted Cable Crunches", "Hanging Leg Raises"] },
-                anchor: { circuitA: { push: "DB Bench Press", pull: "Lat Pulldowns", core: "Weighted Cable Crunches" }, circuitB: { push: "Flies", pull: "Reverse Cable Flies", core: "Back Extensions" } }
+                leader: { m1: "Seated DB Press (Strict)", m2: "DB Lateral Raises (3s negative)", m3: "DB Bicep Curls (3s descent)" },
+                anchor: { m1: "Seated DB Press (Strict)", m2: "DB Lateral Raises (3s negative)", m3: "DB Bicep Curls (3s descent)" }
             }
         };
 
@@ -382,7 +382,7 @@
             
             const helper = document.getElementById('suppHelper');
             if (state.config.mainLiftStyle === '5s_pro') {
-                helper.innerText = "Recommended for 5's PRO: BBB or BBS (High Volume).";
+                helper.innerText = "Recommended for 5's PRO: FSL 5x5 or BBB.";
             } else {
                 helper.innerText = "Recommended for Original 5/3/1: FSL or SSL (Lower Volume).";
             }
@@ -404,7 +404,7 @@
                 btnLeader.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors bg-emerald-700 text-white';
                 btnAnchor.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors text-gray-400 hover:text-white';
                 phaseDesc.innerText = "Higher volume, lower intensity. Build the base. Recommend 5's PRO.";
-                if(!skipSave) { mainLiftSelect.value = '5s_pro'; suppSelect.value = 'bbb_fsl'; }
+                if(!skipSave) { mainLiftSelect.value = '5s_pro'; suppSelect.value = 'fsl'; }
             } else {
                 btnAnchor.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors bg-rose-700 text-white';
                 btnLeader.className = 'flex-1 py-2 rounded text-sm font-bold transition-colors text-gray-400 hover:text-white';
@@ -551,11 +551,9 @@
             }
 
             renderWeek(weekNum);
-            // Don't need to save state just for switching tabs
         }
 
         function getAccessories(liftName, weekNum) {
-            const isAnchor = state.config.phase === 'anchor';
             let key = '';
             if(liftName === 'Squat') key = 'squatDay';
             else if(liftName === 'Bench Press') key = 'benchDay';
@@ -564,19 +562,11 @@
 
             const pool = accessories[key];
 
-            if (isAnchor) {
-                return { isAnchor: true, circuitA: pool.anchor.circuitA, circuitB: pool.anchor.circuitB };
-            }
-
-            const idx = (weekNum + state.cycle) % 2; 
-            const pick = (arr) => {
-                if (arr.length === 1) return arr[0];
-                return arr[idx % arr.length];
-            };
-
             return {
-                isAnchor: false, push: pick(pool.leader.push), pull: pick(pool.leader.pull),
-                core: pick(pool.leader.core), label: (liftName === 'Bench Press' || liftName === 'Overhead Press') ? 'LEG/CORE' : 'ABS/CORE'
+                isAnchor: false, 
+                m1: pool.leader.m1, 
+                m2: pool.leader.m2, 
+                m3: pool.leader.m3 
             };
         }
 
@@ -774,49 +764,25 @@
             let assistanceHtml = '';
             if(week !== 4) {
                 const acc = getAccessories(lift.name, week);
-                if (acc.isAnchor) {
-                    assistanceHtml = `
-                    <div class="mt-4 pt-2 border-t border-gray-700">
-                        <div class="text-xs text-blue-400 font-bold uppercase mb-2">Anchor Circuits (50-100 Reps)</div>
-                        <div class="mb-3">
-                            <div class="text-[10px] font-bold text-yellow-500 uppercase mb-1">Circuit A (5 Rounds x 10 Reps)</div>
-                            <div class="space-y-1 text-sm text-gray-300 pl-2 border-l-2 border-yellow-500/30">
-                                <div class="flex justify-between"><span class="text-gray-400">Push</span> <span>${acc.circuitA.push}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">Pull</span> <span>${acc.circuitA.pull}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">Core</span> <span>${acc.circuitA.core}</span></div>
-                            </div>
+                assistanceHtml = `
+                <div class="mt-4 pt-2 border-t border-gray-700">
+                    <div class="text-xs text-rose-500 font-bold uppercase mb-2">Powerbuilding Isolation (Strict Tempo)</div>
+                    <div class="space-y-2 text-sm text-gray-300">
+                        <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">HEAVY</span><span>${acc.m1}</span></div>
+                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 8-9</span></div>
                         </div>
-                        <div>
-                            <div class="text-[10px] font-bold text-purple-500 uppercase mb-1">Circuit B (3 Rounds x 15 Reps)</div>
-                            <div class="space-y-1 text-sm text-gray-300 pl-2 border-l-2 border-purple-500/30">
-                                <div class="flex justify-between"><span class="text-gray-400">Push</span> <span>${acc.circuitB.push}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">Pull</span> <span>${acc.circuitB.pull}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">Core</span> <span>${acc.circuitB.core}</span></div>
-                            </div>
+                        <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">ISOLATE</span><span>${acc.m2}</span></div>
+                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 8-9</span></div>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">FINISH</span><span>${acc.m3}</span></div>
+                            <div class="font-mono text-gray-400 text-xs text-right">3-4 x 15<br><span class="text-[9px] text-gray-500">RPE 8-9</span></div>
                         </div>
                     </div>
-                    `;
-                } else {
-                    assistanceHtml = `
-                    <div class="mt-4 pt-2 border-t border-gray-700">
-                        <div class="text-xs text-blue-400 font-bold uppercase mb-2">Accessory Work (25-50 Reps - Isolation Focus)</div>
-                        <div class="space-y-2 text-sm text-gray-300">
-                            <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                                <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PUSH</span><span>${acc.push}</span></div>
-                                <div class="font-mono text-gray-400 text-xs text-right">3 x 15<br><span class="text-[9px] text-gray-500">RPE 7-9</span></div>
-                            </div>
-                            <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                                <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PULL</span><span>${acc.pull}</span></div>
-                                <div class="font-mono text-gray-400 text-xs text-right">3 x 15<br><span class="text-[9px] text-gray-500">RPE 7-9</span></div>
-                            </div>
-                            <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                                <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${acc.label}</span><span>${acc.core}</span></div>
-                                <div class="font-mono text-gray-400 text-xs text-right">3 x 15<br><span class="text-[9px] text-gray-500">RPE 7-9</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                }
+                </div>
+                `;
             }
 
             return `
