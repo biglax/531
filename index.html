@@ -84,8 +84,8 @@
     <!-- Header -->
     <header class="text-center mb-8 max-w-2xl w-full">
         <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">5/3/1 <span class="text-rose-600">FOREVER</span></h1>
-        <p class="text-gray-400 text-sm">Powerbuilding Logic (Strict Tempo)</p>
-        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: FSL & Consolidated Machine Block</p>
+        <p class="text-gray-400 text-sm">Strict Wendler FSL Logic (Push/Pull/Core Daily)</p>
+        <p class="text-gray-500 text-xs mt-1 text-emerald-400 font-bold">Updated: Athletic Conditioning & Fatigue Management</p>
     </header>
 
     <!-- Main App Container -->
@@ -186,7 +186,7 @@
                             <option value="ssl">Second Set Last (5x5 @ SSL)</option>
                             <option value="none">None (Main Work Only)</option>
                         </select>
-                        <p id="suppHelper" class="text-[10px] text-gray-500 mt-1">Default set to FSL 5x5 for Powerbuilding / Cut phase.</p>
+                        <p id="suppHelper" class="text-[10px] text-gray-500 mt-1">Default set to FSL 5x5 for Caloric Deficit.</p>
                     </div>
                     <div>
                         <label class="block text-gray-400 text-xs mb-1">Training Max % (Reset Only)</label>
@@ -316,23 +316,12 @@
             }
         };
 
+        // Strict Wendler Push/Pull/Core Setup
         const accessories = {
-            squatDay: {
-                leader: { m1: "Leg Press (3s negative)", m2: "Leg Extensions (90s rest)", m3: "Cable Crunches (3s negative)" },
-                anchor: { m1: "Leg Press (3s negative)", m2: "Leg Extensions (90s rest)", m3: "Cable Crunches (3s negative)" }
-            },
-            benchDay: {
-                leader: { m1: "DB Incline Press (3s negative)", m2: "Cable Pec Flyes (3s stretch)", m3: "Tricep Pushdowns (3s negative)" },
-                anchor: { m1: "DB Incline Press (3s negative)", m2: "Cable Pec Flyes (3s stretch)", m3: "Tricep Pushdowns (3s negative)" }
-            },
-            deadliftDay: {
-                leader: { m1: "Seated Ham Curls (3s negative)", m2: "Lat Pulldowns (3s negative)", m3: "Seated Cable Rows (Thumbless)" },
-                anchor: { m1: "Seated Ham Curls (3s negative)", m2: "Lat Pulldowns (3s negative)", m3: "Seated Cable Rows (Thumbless)" }
-            },
-            pressDay: {
-                leader: { m1: "Seated DB Press (Strict)", m2: "DB Lateral Raises (3s negative)", m3: "DB Bicep Curls (3s descent)" },
-                anchor: { m1: "Seated DB Press (Strict)", m2: "DB Lateral Raises (3s negative)", m3: "DB Bicep Curls (3s descent)" }
-            }
+            squatDay: { push: "Tricep Pushdowns", pull: "Face Pulls", core: "Cable Crunches", coreLabel: "ABS/CORE" },
+            benchDay: { push: "DB Incline Press", pull: "Seated Cable Rows", core: "Leg Extensions", coreLabel: "LEG/CORE" },
+            deadliftDay: { push: "Cable Pec Flyes", pull: "Lat Pulldowns", core: "Hanging Leg Raises", coreLabel: "ABS/CORE" },
+            pressDay: { push: "Seated DB Press", pull: "DB Bicep Curls", core: "Seated Ham Curls", coreLabel: "LEG/CORE" }
         };
 
         // --- LOCAL STORAGE FUNCTIONS ---
@@ -553,21 +542,11 @@
             renderWeek(weekNum);
         }
 
-        function getAccessories(liftName, weekNum) {
-            let key = '';
-            if(liftName === 'Squat') key = 'squatDay';
-            else if(liftName === 'Bench Press') key = 'benchDay';
-            else if(liftName === 'Deadlift') key = 'deadliftDay';
-            else key = 'pressDay';
-
-            const pool = accessories[key];
-
-            return {
-                isAnchor: false, 
-                m1: pool.leader.m1, 
-                m2: pool.leader.m2, 
-                m3: pool.leader.m3 
-            };
+        function getAccessories(liftName) {
+            if(liftName === 'Squat') return accessories.squatDay;
+            if(liftName === 'Bench Press') return accessories.benchDay;
+            if(liftName === 'Deadlift') return accessories.deadliftDay;
+            return accessories.pressDay;
         }
 
         // NEW STRICT TM TEST LOGIC WITH 1RM EXPORT
@@ -763,22 +742,22 @@
 
             let assistanceHtml = '';
             if(week !== 4) {
-                const acc = getAccessories(lift.name, week);
+                const acc = getAccessories(lift.name);
                 assistanceHtml = `
                 <div class="mt-4 pt-2 border-t border-gray-700">
-                    <div class="text-xs text-rose-500 font-bold uppercase mb-2">Powerbuilding Isolation (Strict Tempo)</div>
+                    <div class="text-xs text-blue-400 font-bold uppercase mb-2">Accessory Work (25-50 Reps - Moderate Intensity)</div>
                     <div class="space-y-2 text-sm text-gray-300">
                         <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">HEAVY</span><span>${acc.m1}</span></div>
-                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 8-9</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PUSH</span><span>${acc.push}</span></div>
+                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
                         </div>
                         <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">ISOLATE</span><span>${acc.m2}</span></div>
-                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 8-9</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PULL</span><span>${acc.pull}</span></div>
+                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
                         </div>
                         <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">FINISH</span><span>${acc.m3}</span></div>
-                            <div class="font-mono text-gray-400 text-xs text-right">3-4 x 15<br><span class="text-[9px] text-gray-500">RPE 8-9</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${acc.coreLabel}</span><span>${acc.core}</span></div>
+                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
                         </div>
                     </div>
                 </div>
