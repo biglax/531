@@ -311,11 +311,36 @@
         };
 
         const accessories = {
-            squatDay: { push: "Tricep Pushdowns", pull: "Face Pulls", core: "Cable Crunches", coreLabel: "ABS/CORE" },
-            benchDay: { push: "DB Incline Press", pull: "Seated Cable Rows", core: "Leg Extensions", coreLabel: "LEG/CORE" },
-            deadliftDay: { push: "Cable Pec Flyes", pull: "Lat Pulldowns", core: "Hanging Leg Raises", coreLabel: "ABS/CORE" },
-            pressDay: { push: "Seated DB Press", pull: "DB Bicep Curls", core: "Seated Ham Curls", coreLabel: "LEG/CORE" }
+            squatDay: { push: "DB Bench Press", pull: "Lat Pulldowns", core: "Hanging Leg Raises", coreLabel: "ABS/CORE" },
+            benchDay: { push: "Incline DB Press", pull: "Seated Cable Rows", core: "Bulgarian Split Squats", coreLabel: "SINGLE-LEG" },
+            deadliftDay: { push: "Dips (or Deficit Push-Ups)", pull: "Chin-Ups (or Pulldowns)", core: "Back Extensions", coreLabel: "ABS/CORE" },
+            pressDay: { push: "Close-Grip Bench Press", pull: "Face Pulls", core: "Walking Lunges", coreLabel: "SINGLE-LEG" }
         };
+
+        function saveAcc(safeLift, cat, field, val) {
+            state.acc = state.acc || {};
+            state.acc[safeLift] = state.acc[safeLift] || {};
+            state.acc[safeLift][cat] = state.acc[safeLift][cat] || {};
+            state.acc[safeLift][cat][field] = val;
+            saveState();
+        }
+
+        function accRow(safeLift, cat, label, exercise) {
+            const saved = (state.acc && state.acc[safeLift] && state.acc[safeLift][cat]) || {};
+            const kgVal = String(saved.kg || '').replace(/"/g, '&quot;');
+            const repsVal = String(saved.reps || '').replace(/"/g, '&quot;');
+            return `
+                        <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${label}</span><span class="text-sm">${exercise}</span></div>
+                                <div class="flex gap-2">
+                                    <input type="number" placeholder="KG" value="${kgVal}" onchange="saveAcc('${safeLift}','${cat}','kg',this.value)" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
+                                    <input type="text" placeholder="Reps" value="${repsVal}" onchange="saveAcc('${safeLift}','${cat}','reps',this.value)" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
+                                </div>
+                            </div>
+                            <div class="font-mono text-gray-400 text-xs text-right">3-4 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
+                        </div>`;
+        }
 
         function saveState() {
             localStorage.setItem('531_forever_state', JSON.stringify(state));
@@ -715,40 +740,14 @@
             let assistanceHtml = '';
             if(week !== 4) {
                 const acc = getAccessories(lift.name);
+                const safeLift = lift.name.replace(/\s+/g, '');
                 assistanceHtml = `
                 <div class="mt-4 pt-2 border-t border-gray-700">
-                    <div class="text-xs text-blue-400 font-bold uppercase mb-2">Accessory Work (Track Weights)</div>
+                    <div class="text-xs text-blue-400 font-bold uppercase mb-1">Accessory Work (25-50 reps/category - saved automatically)</div>
                     <div class="space-y-2 text-sm text-gray-300">
-                        <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PUSH</span><span class="text-sm">${acc.push}</span></div>
-                                <div class="flex gap-2">
-                                    <input type="number" placeholder="KG" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
-                                    <input type="text" placeholder="Reps" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
-                                </div>
-                            </div>
-                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
-                        </div>
-                        <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">PULL</span><span class="text-sm">${acc.pull}</span></div>
-                                <div class="flex gap-2">
-                                    <input type="number" placeholder="KG" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
-                                    <input type="text" placeholder="Reps" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
-                                </div>
-                            </div>
-                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
-                        </div>
-                        <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1"><span class="text-[10px] font-bold bg-gray-700 px-1.5 py-0.5 rounded text-gray-400">${acc.coreLabel}</span><span class="text-sm">${acc.core}</span></div>
-                                <div class="flex gap-2">
-                                    <input type="number" placeholder="KG" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
-                                    <input type="text" placeholder="Reps" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
-                                </div>
-                            </div>
-                            <div class="font-mono text-gray-400 text-xs text-right">3 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
-                        </div>
+                        ${accRow(safeLift, 'push', 'PUSH', acc.push)}
+                        ${accRow(safeLift, 'pull', 'PULL', acc.pull)}
+                        ${accRow(safeLift, 'core', acc.coreLabel, acc.core)}
                     </div>
                 </div>
                 `;
