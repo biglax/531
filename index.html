@@ -310,24 +310,26 @@
             }
         };
 
-        // Leader = hypertrophy tranches (3 x 12-15, 3s NEG). Anchor = same pool, easy reps style (~90-115/day).
-        // Supersets (SS) noted inline. Curls ride with Tuesday's pull tranche.
+        // LEADER: Assistance = high-rep, low-axial-fatigue movements (dips, rows, pull-ups, lateral raises),
+        // supersetted to keep density high. NEGATIVES are the focus: every set 3s eccentric, RPE 7-8.
+        // ANCHOR: programmatic best practice - same pool, no supersets, 2 sets/group, easy reps (RPE 6-7, 2s neg)
+        // so recovery goes to the PR sets. Categories are plain: PUSH / PULL / CORE.
         const accessories = {
             squatDay: {
-                leader: { push: "Lateral Raises (SS: Triceps Pushdowns)", pull: "Lat Pulldowns", core: "Weighted Cable Crunches", coreLabel: "ABS/CORE" },
-                anchor: { push: "Lateral Raises (easy, no SS)", pull: "Lat Pulldowns", core: "Weighted Cable Crunches", coreLabel: "ABS/CORE" }
+                leader: { push: "Lateral Raises (SS: Triceps Pushdowns)", pull: "Lat Pulldowns", core: "Weighted Cable Crunches", coreLabel: "CORE" },
+                anchor: { push: "Lateral Raises", pull: "Lat Pulldowns", core: "Weighted Cable Crunches", coreLabel: "CORE" }
             },
             benchDay: {
-                leader: { push: "DB Bench Press (flat / incline alt weeks)", pull: "Seated Cable Row (SS: Bicep Curls, last set)", core: "Leg Press", coreLabel: "LEGS/CORE" },
-                anchor: { push: "Incline DB Press (light, fast)", pull: "Seated Cable Row", core: "Leg Press", coreLabel: "LEGS/CORE" }
+                leader: { push: "DB Bench Press (flat / incline alt weeks)", pull: "Seated Cable Row (SS: Bicep Curls, last set)", core: "Leg Press", coreLabel: "CORE" },
+                anchor: { push: "Incline DB Press", pull: "Seated Cable Row", core: "Leg Press", coreLabel: "CORE" }
             },
             deadliftDay: {
-                leader: { push: "Dips", pull: "Chin-Ups", core: "Back Extensions + Hanging Leg Raises", coreLabel: "CORE/POST" },
-                anchor: { push: "Dips", pull: "Chin-Ups", core: "Hanging Leg Raises", coreLabel: "ABS/CORE" }
+                leader: { push: "Dips", pull: "Chin-Ups", core: "Back Extensions + Hanging Leg Raises", coreLabel: "CORE" },
+                anchor: { push: "Dips", pull: "Chin-Ups", core: "Hanging Leg Raises", coreLabel: "CORE" }
             },
             pressDay: {
-                leader: { push: "Lateral Raises (SS: DB Shrugs)", pull: "Face Pulls", core: "Leg Curls", coreLabel: "LEGS/CORE" },
-                anchor: { push: "Lateral Raises", pull: "Face Pulls", core: "Leg Curls", coreLabel: "LEGS/CORE" }
+                leader: { push: "Lateral Raises (SS: DB Shrugs)", pull: "Face Pulls", core: "Leg Curls", coreLabel: "CORE" },
+                anchor: { push: "Lateral Raises", pull: "Face Pulls", core: "Leg Curls", coreLabel: "CORE" }
             }
         };
 
@@ -344,7 +346,7 @@
             const saved = (state.acc && state.acc[safeLift] && state.acc[safeLift][cat]) || {};
             const kgVal = String(saved.kg || '').replace(/"/g, '&quot;');
             const repsVal = String(saved.reps || '').replace(/"/g, '&quot;');
-            const scheme = anchor ? `3 x 12-15<br><span class="text-[9px] text-gray-500">EASY. RPE 6-7, 2s neg</span>` : `3 x 12-15<br><span class="text-[9px] text-gray-500">3s NEG, RPE 7-8</span>`;
+            const scheme = anchor ? `2 x 12-15<br><span class="text-[9px] text-gray-500">EASY. RPE 6-7, 2s neg</span>` : `3 x 12-15<br><span class="text-[9px] text-gray-500">3s NEG, RPE 7-8</span>`;
             return `
                         <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
                             <div>
@@ -762,7 +764,7 @@
                 const safeLift = lift.name.replace(/\s+/g, '');
                 assistanceHtml = `
                 <div class="mt-4 pt-2 border-t border-gray-700">
-                    <div class="text-xs text-blue-400 font-bold uppercase mb-1">Accessory Tranches (3 x 12-15 each, phase-aware - saved automatically)</div>
+                    <div class="text-xs text-blue-400 font-bold uppercase mb-1">Assistance (Push / Pull / Core - high-rep, supersetted for density, saved automatically)</div>
                     <div class="space-y-2 text-sm text-gray-300">
                         ${accRow(safeLift, 'push', 'PUSH', acc.push)}
                         ${accRow(safeLift, 'pull', 'PULL', acc.pull)}
