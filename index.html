@@ -310,11 +310,25 @@
             }
         };
 
+        // Leader = hypertrophy tranches (3 x 12-15, 3s NEG). Anchor = same pool, easy reps style (~90-115/day).
+        // Supersets (SS) noted inline. Curls ride with Tuesday's pull tranche.
         const accessories = {
-            squatDay: { push: "DB Bench Press", pull: "Lat Pulldowns", core: "Hanging Leg Raises", coreLabel: "ABS/CORE" },
-            benchDay: { push: "Incline DB Press", pull: "Seated Cable Rows", core: "Bulgarian Split Squats", coreLabel: "SINGLE-LEG" },
-            deadliftDay: { push: "Dips (or Deficit Push-Ups)", pull: "Chin-Ups (or Pulldowns)", core: "Back Extensions", coreLabel: "ABS/CORE" },
-            pressDay: { push: "Close-Grip Bench Press", pull: "Face Pulls", core: "Walking Lunges", coreLabel: "SINGLE-LEG" }
+            squatDay: {
+                leader: { push: "Lateral Raises (SS: Triceps Pushdowns)", pull: "Lat Pulldowns", core: "Weighted Cable Crunches", coreLabel: "ABS/CORE" },
+                anchor: { push: "Lateral Raises (easy, no SS)", pull: "Lat Pulldowns", core: "Weighted Cable Crunches", coreLabel: "ABS/CORE" }
+            },
+            benchDay: {
+                leader: { push: "DB Bench Press (flat / incline alt weeks)", pull: "Seated Cable Row (SS: Bicep Curls, last set)", core: "Leg Press", coreLabel: "LEGS/CORE" },
+                anchor: { push: "Incline DB Press (light, fast)", pull: "Seated Cable Row", core: "Leg Press", coreLabel: "LEGS/CORE" }
+            },
+            deadliftDay: {
+                leader: { push: "Dips", pull: "Chin-Ups", core: "Back Extensions + Hanging Leg Raises", coreLabel: "CORE/POST" },
+                anchor: { push: "Dips", pull: "Chin-Ups", core: "Hanging Leg Raises", coreLabel: "ABS/CORE" }
+            },
+            pressDay: {
+                leader: { push: "Lateral Raises (SS: DB Shrugs)", pull: "Face Pulls", core: "Leg Curls", coreLabel: "LEGS/CORE" },
+                anchor: { push: "Lateral Raises", pull: "Face Pulls", core: "Leg Curls", coreLabel: "LEGS/CORE" }
+            }
         };
 
         function saveAcc(safeLift, cat, field, val) {
@@ -326,9 +340,11 @@
         }
 
         function accRow(safeLift, cat, label, exercise) {
+            const anchor = state.config.phase === 'anchor';
             const saved = (state.acc && state.acc[safeLift] && state.acc[safeLift][cat]) || {};
             const kgVal = String(saved.kg || '').replace(/"/g, '&quot;');
             const repsVal = String(saved.reps || '').replace(/"/g, '&quot;');
+            const scheme = anchor ? `3 x 12-15<br><span class="text-[9px] text-gray-500">EASY. RPE 6-7, 2s neg</span>` : `3 x 12-15<br><span class="text-[9px] text-gray-500">3s NEG, RPE 7-8</span>`;
             return `
                         <div class="flex justify-between items-center bg-gray-800/50 p-2 rounded border border-gray-700">
                             <div>
@@ -338,7 +354,7 @@
                                     <input type="text" placeholder="Reps" value="${repsVal}" onchange="saveAcc('${safeLift}','${cat}','reps',this.value)" class="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-xs text-center">
                                 </div>
                             </div>
-                            <div class="font-mono text-gray-400 text-xs text-right">3-4 x 10-15<br><span class="text-[9px] text-gray-500">RPE 7-8</span></div>
+                            <div class="font-mono text-gray-400 text-xs text-right">${scheme}</div>
                         </div>`;
         }
 
@@ -548,10 +564,13 @@
         }
 
         function getAccessories(liftName) {
-            if(liftName === 'Squat') return accessories.squatDay;
-            if(liftName === 'Bench Press') return accessories.benchDay;
-            if(liftName === 'Deadlift') return accessories.deadliftDay;
-            return accessories.pressDay;
+            const phase = state.config.phase === 'anchor' ? 'anchor' : 'leader';
+            const acc = accessories;
+            const sel = (day) => acc[day][phase] || acc[day].leader;
+            if(liftName === 'Squat') return sel('squatDay');
+            if(liftName === 'Bench Press') return sel('benchDay');
+            if(liftName === 'Deadlift') return sel('deadliftDay');
+            return sel('pressDay');
         }
 
         // FIXED CALCULATION LOGIC
@@ -743,7 +762,7 @@
                 const safeLift = lift.name.replace(/\s+/g, '');
                 assistanceHtml = `
                 <div class="mt-4 pt-2 border-t border-gray-700">
-                    <div class="text-xs text-blue-400 font-bold uppercase mb-1">Accessory Work (25-50 reps/category - saved automatically)</div>
+                    <div class="text-xs text-blue-400 font-bold uppercase mb-1">Accessory Tranches (3 x 12-15 each, phase-aware - saved automatically)</div>
                     <div class="space-y-2 text-sm text-gray-300">
                         ${accRow(safeLift, 'push', 'PUSH', acc.push)}
                         ${accRow(safeLift, 'pull', 'PULL', acc.pull)}
