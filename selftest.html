@@ -106,16 +106,21 @@ eq('no supplemental in tm test', E.supplemental('tmtest', 1, TM, cfg), null);
 // ---- assistance volumes
 const la = E.assistanceFor('leader1', 'squat', cfg);
 const aa = E.assistanceFor('anchor', 'squat', cfg);
-const lt = la.reduce((s, a) => s + a.sets * a.reps, 0);
-const at = aa.reduce((s, a) => s + a.sets * a.reps, 0);
-ok('leader assistance 25-50 per category', la.every(a => a.sets * a.reps >= 25 && a.sets * a.reps <= 50), `leader ${lt} total, ${lt / 3} per category`);
-ok('anchor assistance 50-100 per category', aa.every(a => a.sets * a.reps >= 50 && a.sets * a.reps <= 100), `anchor ${at} total, ${at / 3} per category`);
-ok('anchor assistance > leader assistance', at > lt, `${at} vs ${lt}`);
+ok('leader 25-50 per category', la.every(a => a.total >= 25 && a.total <= 50), la.map(a => a.total).join('/'));
+ok('anchor 50-100 per category', aa.every(a => a.total >= 50 && a.total <= 100), aa.map(a => a.total).join('/'));
+ok('anchor assistance > leader', aa[0].total > la[0].total, `${aa[0].total} vs ${la[0].total}`);
 eq('assistance has 3 categories', la.map(a => a.cat), ['push', 'pull', 'singleleg']);
+eq('leader uses one movement', la.map(a => a.movements.length), [1, 1, 1]);
+eq('anchor uses two movements', aa.map(a => a.movements.length), [2, 2, 2]);
+eq('anchor sets are 3 then 2', aa[0].movements.map(m => m.sets), [3, 2]);
+eq('anchor movements are 15 reps', aa[0].movements.map(m => m.reps), [15, 15]);
+eq('anchor total is 75', aa[0].total, 75);
+eq('leader total is 36', la[0].total, 36);
 
 // ---- BBB leader drops legs/core to 0-25
 const bbbAcc = E.assistanceFor('leader1', 'squat', { supplemental: 'bbb50' });
-ok('BBB leader core 0-25', bbbAcc[2].sets * bbbAcc[2].reps <= 25, `${bbbAcc[2].sets}x${bbbAcc[2].reps}`);
+ok('BBB leader core 0-25', bbbAcc[2].total <= 25, `${bbbAcc[2].total}`);
+eq('BBB core range', bbbAcc[2].range, '0-25');
 
 // ---- block flow
 const s = (b) => E.advance(b, cfg);

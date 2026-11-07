@@ -335,9 +335,10 @@ function todayHtml() {
           <div class="supp-note">${Math.round(supp.pct * 100)}% of TM. ${supp.note}</div>
         </div>` : ''}
 
-      <div class="section-label">Assistance <b>${isTest || isDeload ? 'optional' : (E.phaseInfo(b.phase).kind === 'anchor' ? '50-100 reps' : '25-50 reps')}</b></div>
+      <div class="section-label">Assistance <b>${isTest || isDeload ? 'optional' : 'per category'}</b></div>
       <div class="assist">
-        ${assist.map((a) => assistRow(a, lift)).join('')}
+        <div class="assist-note">${E.assistanceNote(b.phase, state.cfg)}</div>
+        ${assist.map((a) => assistBlock(a, lift)).join('')}
       </div>
     </div>
 
@@ -383,25 +384,30 @@ function setRow(s, i, log, lift) {
     </div>` : ''}`;
 }
 
-function assistRow(a, lift) {
-  const k = `${lift}:${a.cat}`;
-  const last = state.loads[k] || {};
-  const total = a.sets * a.reps;
-  return `
-    <div class="assist-row">
-      <div class="assist-head">
-        <span class="assist-name">${esc(a.exercise)}</span>
-        <span class="assist-cat">${a.label}</span>
-      </div>
-      <div class="assist-presc">${a.sets} × ${a.reps} · ${total} reps · ${a.range} target</div>
-      <div class="assist-inputs">
-        <input type="number" inputmode="decimal" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-field="kg"
-          value="${last.kg || ''}" placeholder="kg" />
-        <input type="number" inputmode="numeric" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-field="reps"
-          value="${last.reps || ''}" placeholder="reps" />
-        <span class="hint">${last.kg ? `last ${last.kg}×${last.reps}` : a.note}</span>
-      </div>
-    </div>`;
+function assistBlock(a, lift) {
+  return `<div class="assist-block">
+    <div class="assist-cat-head"><span>${a.label}</span><b>${a.total} reps · ${a.range}</b></div>
+    ${a.movements.map((m, i) => assistMove(a, m, i, lift)).join('')}
+  </div>`;
+}
+
+function assistMove(a, m, i, lift) {
+  const k = `${lift}:${a.cat}:${i}`;
+  const legacy = i === 0 ? state.loads[`${lift}:${a.cat}`] : null;
+  const last = state.loads[k] || legacy || {};
+  return `<div class="assist-move">
+    <div class="assist-head">
+      <span class="assist-name">${esc(m.name)}</span>
+      <span class="assist-presc">${m.sets} × ${m.reps}</span>
+    </div>
+    <div class="assist-inputs">
+      <input type="number" inputmode="decimal" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-idx="${i}" data-field="kg"
+        value="${last.kg || ''}" placeholder="kg" />
+      <input type="number" inputmode="numeric" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-idx="${i}" data-field="reps"
+        value="${last.reps || ''}" placeholder="reps" />
+      <span class="hint">${last.kg ? `last ${last.kg}×${last.reps}` : ''}</span>
+    </div>
+  </div>`;
 }
 
 function testSummaryHtml() {
@@ -917,7 +923,7 @@ document.addEventListener('change', (e) => {
     return;
   }
   if (act === 'load') {
-    const k = `${t.dataset.lift}:${t.dataset.cat}`;
+    const k = `${t.dataset.lift}:${t.dataset.cat}:${t.dataset.idx}`;
     state.loads[k] = state.loads[k] || {};
     state.loads[k][t.dataset.field] = t.value;
     save();
@@ -959,8 +965,18 @@ document.addEventListener('change', (e) => {
 
 /* -------------------------------------------------------------------- init */
 
+function migrateLoads() {
+  const out = {};
+  for (const [k, v] of Object.entries(state.loads || {})) {
+    out[k.split(':').length === 2 ? `${k}:0` : k] = v;
+  }
+  state.loads = out;
+  save();
+}
+
 function init() {
   state = load();
+  if (state) migrateLoads();
   if (state) {
     render();
     return;

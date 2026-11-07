@@ -146,55 +146,72 @@ export const ASSIST = {
   press: { push: 'Lateral Raise', pull: 'Face Pull', singleleg: 'Walking Lunge', kind: 'single' },
 };
 
-export function assistance(phase, lift) {
+// Anchor: the book says pick one or two exercises per category and hit 50-100 total reps.
+// Two movements, three sets of the one that supports the main lift, two sets of the accessory one.
+const ANCHOR_PAIRS = {
+  squat: {
+    push: [['Lateral Raise', 3, 15], ['Triceps Pushdown', 2, 15]],
+    pull: [['Lat Pulldown', 3, 15], ['Face Pull', 2, 15]],
+    singleleg: [['Weighted Cable Crunch', 3, 15], ['Back Extension', 2, 15]],
+  },
+  bench: {
+    push: [['Incline DB Press', 3, 15], ['Lateral Raise', 2, 15]],
+    pull: [['Seated Cable Row', 3, 15], ['Face Pull', 2, 15]],
+    singleleg: [['Leg Curl', 3, 15], ['Hanging Leg Raise', 2, 15]],
+  },
+  deadlift: {
+    push: [['Dips', 3, 15], ['Lateral Raise', 2, 15]],
+    pull: [['Chin-Up', 3, 15], ['Chest-Supported Row', 2, 15]],
+    singleleg: [['Hanging Leg Raise', 3, 15], ['Back Extension', 2, 15]],
+  },
+  press: {
+    push: [['Lateral Raise', 3, 15], ['Triceps Pushdown', 2, 15]],
+    pull: [['Face Pull', 3, 15], ['Chin-Up', 2, 15]],
+    singleleg: [['Walking Lunge', 3, 15], ['Leg Curl', 2, 15]],
+  },
+};
+
+export function assistanceFor(phase, lift, cfg) {
   const info = phaseInfo(phase);
   const anchor = info.kind === 'anchor';
-  const repeat = 1;
-  return [
-    {
-      cat: 'push',
-      label: 'PUSH',
-      exercise: ASSIST[lift].push,
-      sets: anchor ? 4 : 3,
-      reps: anchor ? 15 : 12,
-      range: anchor ? '50-100' : '25-50',
-      note: anchor ? 'Easy reps. RPE 7. Never grind.' : 'Controlled negatives. RPE 7-8.',
-      // push/pull always in range
-    },
-    {
-      cat: 'pull',
-      label: 'PULL',
-      exercise: ASSIST[lift].pull,
-      sets: anchor ? 4 : 3,
-      reps: anchor ? 15 : 12,
-      range: anchor ? '50-100' : '25-50',
-      note: anchor ? 'Easy reps. RPE 7. Never grind.' : 'Controlled negatives. RPE 7-8.',
-    },
-    {
-      cat: 'singleleg',
-      label: ASSIST[lift].kind === 'single' ? 'SINGLE LEG' : 'CORE',
-      exercise: ASSIST[lift].singleleg,
-      sets: anchor ? 4 : 3,
-      reps: anchor ? 15 : 12,
-      range: anchor ? '50-100' : '25-50',
-      note: anchor ? 'Easy reps. RPE 7. Never grind.' : 'Controlled negatives. RPE 7-8.',
-    },
+  const bbb = ['bbb50', 'bbb60', 'bbb_fsl'].includes(cfg.supplemental);
+  const lowCore = !anchor && bbb;
+
+  const cats = [
+    { cat: 'push', label: 'PUSH' },
+    { cat: 'pull', label: 'PULL' },
+    { cat: 'singleleg', label: ASSIST[lift].kind === 'single' ? 'SINGLE LEG' : 'CORE' },
   ];
+
+  return cats.map((c) => {
+    let movements;
+    if (anchor) {
+      movements = ANCHOR_PAIRS[lift][c.cat].map(([name, sets, reps]) => ({ name, sets, reps }));
+    } else if (lowCore && c.cat === 'singleleg') {
+      movements = [{ name: ASSIST[lift].singleleg, sets: 2, reps: 10 }];
+    } else {
+      movements = [{ name: ASSIST[lift][c.cat], sets: 3, reps: 12 }];
+    }
+
+    const total = movements.reduce((n, m) => n + m.sets * m.reps, 0);
+    return {
+      cat: c.cat,
+      label: c.label,
+      movements,
+      total,
+      range: anchor ? '50-100' : lowCore && c.cat === 'singleleg' ? '0-25' : '25-50',
+    };
+  });
 }
 
-// Leader with BBB: legs/core drop to 0-25 because supplemental already hammers legs.
-export function assistanceFor(phase, lift, cfg) {
-  const rows = assistance(phase, lift);
+// Guidance line per phase.
+export function assistanceNote(phase, cfg) {
   const info = phaseInfo(phase);
-  const bbb = ['bbb50', 'bbb60', 'bbb_fsl'].includes(cfg.supplemental);
-  if (info.kind === 'leader' && bbb) {
-    const core = rows[2];
-    core.sets = 2;
-    core.reps = 10;
-    core.range = '0-25';
-    core.note = 'Optional. BBB already loads your legs and lower back.';
+  if (info.kind === 'anchor') return '50-100 total reps per category. Two movements, easy reps, RPE 7.';
+  if (['bbb50', 'bbb60', 'bbb_fsl'].includes(cfg.supplemental)) {
+    return '25-50 total reps per category. Single leg/core is optional at 0-25 with BBB.';
   }
-  return rows;
+  return '25-50 total reps per category. Controlled negatives, RPE 7-8.';
 }
 
 export function warmup(tm) {

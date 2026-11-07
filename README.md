@@ -26,6 +26,8 @@ deload. A passed TM test carries them into the next block.
 - TM test: 70x5, 80x5, 90x5, 100 x3-5. Pass threshold follows the TM percentage.
 - Assistance: three categories every session, push, pull, single-leg or core. Leader 25-50 reps each,
   Anchor 50-100. With BBB, the Leader drops single-leg/core to 0-25.
+- Anchor splits each category across two movements: 3x15 of the main-lift support movement, then 2x15 of
+  the accessory one. 75 total reps per category. Leader stays on one movement at 3x12.
 - Assistance is stable across cycles so it can actually be progressed.
 
 ## Files
