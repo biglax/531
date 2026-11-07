@@ -153,6 +153,31 @@ input[type="number"] { font-family: var(--mono); }
 .progress { height: 2px; background: var(--line); }
 .progress i { display: block; height: 100%; background: var(--accent); transition: width 0.25s ease; }
 
+.warm { border-top: 1px solid var(--line); }
+.warm summary {
+  list-style: none;
+  padding: 11px 18px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--dim);
+  cursor: pointer;
+}
+.warm summary::-webkit-details-marker { display: none; }
+.warm summary::after { content: "+"; float: right; }
+.warm[open] summary::after { content: "−"; }
+.warm-rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 0 18px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.warm-rows i { font-style: normal; color: var(--dim); }
+
 .section-label {
   display: flex;
   align-items: center;

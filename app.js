@@ -317,6 +317,11 @@ function todayHtml() {
       </div>
       <div class="progress"><i style="width:${pctDone}%"></i></div>
 
+      ${E.warmup(tm).length ? `<details class="warm">
+        <summary>Warm-up</summary>
+        <div class="warm-rows">${E.warmup(tm).map((w) => `<span><i>${Math.round(w.pct * 100)}%</i> ${E.fmt(w.weight)} kg × ${w.reps}</span>`).join('')}</div>
+      </details>` : ''}
+
       <div class="section-label">Main work <b>${isTest ? '70 / 80 / 90 / TM' : ''}</b></div>
       ${sets.map((s, i) => setRow(s, i, log, lift)).join('')}
 
