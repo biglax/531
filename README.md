@@ -1,92 +1,46 @@
-<h1>5/3/1 Forever AI Coach</h1>
+# 5/3/1 Forever
 
-<p>A smart strength training calculator based on the principles from Jim Wendler's book <em>"5/3/1 Forever"</em>. This app automates the math, logic, and progression for the <strong>Leader/Anchor</strong> system.</p>
+A single-purpose training block tracker for Jim Wendler's *5/3/1 Forever* Leader/Anchor system.
+Static site, no backend, no account. Everything lives in your browser.
 
-<h2>🔗 Live App</h2>
+Live: https://biglax.github.io/531/
 
-<p><a href="https://biglax.github.io/531/"><strong>Click Here to Use the App</strong></a>
+## The block
 
+Eleven weeks, then repeat:
 
+- Leader 1, three weeks. 5's PRO main work, volume supplemental, 25-50 assistance reps per category.
+- Leader 2, three weeks. Same, training maxes already up one step.
+- Deload, one week. 7th Week Protocol.
+- Anchor, three weeks. 3/5/1 with PR sets on weeks 1 and 3, 50-100 assistance reps per category.
+- TM Test, one week. 5 reps at 85%, 3 reps at 90%.
 
+Training maxes go up 5 kg on squat and deadlift, 2.5 kg on bench and press after Leader 1 and after the
+deload. A passed TM test carries them into the next block.
 
-<em>(Replace the link above after you enable GitHub Pages)</em></p>
+## Rules the code enforces
 
-<hr>
+- Main percentages: 65/75/85, 70/80/90, 75/85/95. No AMRAP during Leaders.
+- Anchor 3/5/1: 70/80/90 x3+, 65/75/85 x5 (no PR), 75/85/95 x5/3/1+.
+- Deload: 70x5, 80x3-5, 90x1, 100x1. No supplemental.
+- TM test: 70x5, 80x5, 90x5, 100 x3-5. Pass threshold follows the TM percentage.
+- Assistance: three categories every session, push, pull, single-leg or core. Leader 25-50 reps each,
+  Anchor 50-100. With BBB, the Leader drops single-leg/core to 0-25.
+- Assistance is stable across cycles so it can actually be progressed.
 
-<h2>📖 How to Use This Program</h2>
+## Files
 
-<p>The "Forever" system uses a macro-cycle approach that goes beyond simple weekly progression. Follow this workflow:</p>
+- `engine.js` program math and block state machine. Pure functions, no DOM.
+- `app.js` screens, logging, rest timer, persistence.
+- `styles.css` phone-first dark UI.
+- `selftest.html` 47 assertions against the engine. Open it after any change.
+- `sw.js` + `manifest.webmanifest` offline and home screen install.
 
-<h3>Phase 1: The Leader (Cycles 1 &amp; 2)</h3>
-<p><strong>Goal:</strong> Build a base. Accumulate volume. Do not miss reps.</p>
-<ol>
-<li><strong>Setup:</strong> Enter your 1 Rep Maxes in the "Setup" box.</li>
-<li><strong>Select Phase:</strong> Ensure <strong>"Leader"</strong> is selected at the top.
-<ul>
-<li><em>Default:</em> 5's PRO (5 reps on all main sets, no PR sets).</li>
-<li><em>Default:</em> Higher volume supplemental work (e.g., BBB or BBS).</li>
-</ul>
-</li>
-<li><strong>Train:</strong> Perform the workouts for Week 1, Week 2, and Week 3.</li>
-<li><strong>Complete Cycle:</strong> Click the <strong>"Complete Cycle (+kg)"</strong> button.
-<ul>
-<li>Your Training Max (TM) will increase (+2.5kg Upper / +5kg Lower).</li>
-<li>The accessories will rotate.</li>
-</ul>
-</li>
-<li><strong>Repeat:</strong> Perform a second Leader cycle (Weeks 1-3 again with heavier weights).</li>
-</ol>
+## Data
 
-<h3>Phase 2: The 7th Week Protocol (Deload)</h3>
-<p><strong>Goal:</strong> Recovery and transition.</p>
-<ol>
-<li>After finishing 2 Leader cycles (6 weeks of training), click the <strong>"7th Week Protocol"</strong> tab.</li>
-<li>Perform the "Deload" workouts for one week.</li>
-<li><strong>Do not</strong> increase your TM this week.</li>
-</ol>
+State lives in `localStorage` under `531_v2`. Export a JSON backup from Log or Setup before clearing
+browser data. The first load imports training maxes from the old Gemini build.
 
-<h3>Phase 3: The Anchor (Cycle 3)</h3>
-<p><strong>Goal:</strong> Test strength. Set PRs.</p>
-<ol>
-<li>Switch the <strong>Phase Type</strong> toggle at the top to <strong>"Anchor"</strong>.
-<ul>
-<li><em>Effect:</em> Swaps to "Original 5/3/1" (PR Sets allowed).</li>
-<li><em>Effect:</em> Reduces supplemental volume (e.g., switches BBB to FSL) to save energy for heavy lifting.</li>
-<li><em>Effect:</em> Increases assistance volume (50-100 reps) because barbell volume is lower.</li>
-</ul>
-</li>
-<li><strong>Train:</strong> Perform Weeks 1-3, pushing for Personal Records on the AMRAP sets.</li>
-<li><strong>Complete Cycle:</strong> Click the button to finish the macro-cycle.</li>
-</ol>
+## Notes
 
-<h3>Phase 4: Reset</h3>
-<ol>
-<li>Perform another <strong>7th Week Protocol</strong> (TM Test).</li>
-<li>Reset to <strong>Leader</strong> mode and start a new macro-cycle.</li>
-</ol>
-
-<h2>🛠️ Features</h2>
-
-<ul>
-<li><strong>Auto-Calculated Training Max:</strong> Takes 85-90% of your 1RM automatically.</li>
-<li><strong>Smart Accessory Logic:</strong>
-<ul>
-<li>Exercises rotate every week to prevent boredom.</li>
-<li>Exercises rotate every cycle to keep stimulus fresh.</li>
-<li>Smart categorization: <em>Squat</em> days get <em>Core</em> work; <em>Bench</em> days get <em>Leg</em> work.</li>
-</ul>
-</li>
-<li><strong>Safety Rails:</strong>
-<ul>
-<li>No Kroc Rows (replaced with strict rows).</li>
-<li>No Ab Wheel (replaced with leg raises/planks).</li>
-<li><strong>Dips Limitation:</strong> Dips are strictly programmed <strong>only</strong> on Press days (1x frequency/week).</li>
-</ul>
-</li>
-<li><strong>Responsive Design:</strong> Works on mobile and desktop.</li>
-<li><strong>Privacy Focused:</strong> All data lives in your browser; nothing is sent to a server.</li>
-</ul>
-
-<h2>📝 License</h2>
-
-<p>Based on the publicly available methodologies of Jim Wendler. Support the author by purchasing <em>5/3/1 Forever</em>.</p>
+The previous version is preserved on the `legacy` branch and tagged `v1-gemini`.

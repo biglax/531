@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>531 engine self test</title>
+<style>
+  :root { --bg:#08090a; --s1:#0f1012; --line:#23262a; --text:#f3f1ec; --muted:#8a8d94; --ok:#6ee7a8; --bad:#ff3b30; --mono:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; margin:0; padding:28px 20px 60px; }
+  .wrap { max-width:760px; margin:0 auto; }
+  h1 { font-size:24px; letter-spacing:-0.03em; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:13px; margin-bottom:22px; }
+  .sum { display:flex; gap:14px; align-items:baseline; margin-bottom:20px; font-family:var(--mono); }
+  .sum b { font-size:30px; }
+  .pass { color:var(--ok); }
+  .fail { color:var(--bad); }
+  .t { display:grid; grid-template-columns:24px 1fr; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .t .dot { font-family:var(--mono); font-weight:700; }
+  .t small { display:block; color:var(--muted); font-family:var(--mono); font-size:11px; margin-top:3px; }
+  table { border-collapse:collapse; width:100%; margin-top:10px; font-family:var(--mono); font-size:12px; }
+  th, td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:400; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
+  h2 { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:34px 0 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Engine self test</h1>
+  <div class="sub">Asserts the program math against 5/3/1 Forever.</div>
+  <div class="sum"><span>Passed</span><b id="p" class="pass">0</b><span>Failed</span><b id="f">0</b></div>
+  <div id="out"></div>
+  <h2>Sample block, 150 kg training max</h2>
+  <div id="table"></div>
+</div>
+<script type="module">
+import * as E from './engine.js';
+
+let pass = 0, fail = 0;
+const rows = [];
+function eq(name, got, want) {
+  const ok = JSON.stringify(got) === JSON.stringify(want);
+  ok ? pass++ : fail++;
+  rows.push({ ok, name, detail: ok ? `got ${JSON.stringify(got)}` : `got ${JSON.stringify(got)}  want ${JSON.stringify(want)}` });
+}
+function ok(name, cond, detail) {
+  cond ? pass++ : fail++;
+  rows.push({ ok: !!cond, name, detail: detail || '' });
+}
+
+const cfg = { supplemental: 'fsl', anchorStyle: '351' };
+const TM = 150;
+
+// ---- rounding / maths
+eq('round 97.5 to 2.5', E.round(97.5), 97.5);
+eq('round 101.2 to 2.5', E.round(101.2), 100);
+eq('e1RM 100x5', Math.round(E.e1rm(100, 5) * 100) / 100, 116.67);
+eq('e1RM single', E.e1rm(150, 1), 150);
+eq('increments', E.INCREMENT, { squat: 5, deadlift: 5, bench: 2.5, press: 2.5 });
+
+// ---- leader = 5s PRO
+const l1 = E.mainSets('leader1', 1, TM, cfg);
+eq('leader w1 pcts', l1.map(s => Math.round(s.pct * 100)), [65, 75, 85]);
+eq('leader w1 reps', l1.map(s => s.reps), ['5', '5', '5']);
+eq('leader w1 no amrap', l1.some(s => s.amrap), false);
+eq('leader w3 pcts', E.mainSets('leader1', 3, TM, cfg).map(s => Math.round(s.pct * 100)), [75, 85, 95]);
+eq('leader w2 weights', E.mainSets('leader1', 2, TM, cfg).map(s => s.weight), [105, 120, 135]);
+
+// ---- anchor 3/5/1
+const a1 = E.mainSets('anchor', 1, TM, cfg);
+eq('anchor w1 pcts 3/5/1', a1.map(s => Math.round(s.pct * 100)), [70, 80, 90]);
+eq('anchor w1 reps', a1.map(s => s.reps), ['3', '3', '3+']);
+eq('anchor w1 amrap on top', a1.map(s => s.amrap), [false, false, true]);
+const a2 = E.mainSets('anchor', 2, TM, cfg);
+eq('anchor w2 reps (no PR)', a2.map(s => s.reps), ['5', '5', '5']);
+eq('anchor w2 no amrap', a2.some(s => s.amrap), false);
+eq('anchor w3 reps', E.mainSets('anchor', 3, TM, cfg).map(s => s.reps), ['5', '3', '1+']);
+
+// ---- anchor 5/3/1 option
+const b1 = E.mainSets('anchor', 1, TM, { supplemental: 'fsl', anchorStyle: '531' });
+eq('anchor 5/3/1 w1 pcts', b1.map(s => Math.round(s.pct * 100)), [65, 75, 85]);
+eq('anchor 5/3/1 w1 reps', b1.map(s => s.reps), ['5', '5', '5+']);
+
+// ---- 7th week
+const dl = E.mainSets('deload', 1, TM, cfg);
+eq('deload pcts', dl.map(s => Math.round(s.pct * 100)), [70, 80, 90, 100]);
+eq('deload reps', dl.map(s => s.reps), ['5', '3-5', '1', '1']);
+eq('deload no amrap', dl.some(s => s.amrap), false);
+const tt = E.mainSets('tmtest', 1, TM, cfg);
+eq('tm test pcts', tt.map(s => Math.round(s.pct * 100)), [70, 80, 90, 100]);
+eq('tm test set is the last one', tt[3].amrap, true);
+
+// ---- TM test targets
+eq('85% TM needs 5', E.tmTestTarget(0.85), 5);
+eq('90% TM needs 3', E.tmTestTarget(0.9), 3);
+
+// ---- supplemental
+const f = E.supplemental('leader1', 1, TM, cfg);
+eq('FSL weight = first set', [f.sets, f.reps, f.weight], [5, 5, 97.5]);
+const bbs = E.supplemental('leader1', 1, TM, { supplemental: 'bbs' });
+eq('BBS 10x5', [bbs.sets, bbs.reps, bbs.weight], [10, 5, 97.5]);
+const bbb = E.supplemental('leader1', 1, TM, { supplemental: 'bbb50' });
+eq('BBB 5x10 at 50%', [bbb.sets, bbb.reps, bbb.weight], [5, 10, 75]);
+eq('no supplemental on deload', E.supplemental('deload', 1, TM, cfg), null);
+eq('no supplemental in tm test', E.supplemental('tmtest', 1, TM, cfg), null);
+
+// ---- assistance volumes
+const la = E.assistanceFor('leader1', 'squat', cfg);
+const aa = E.assistanceFor('anchor', 'squat', cfg);
+const lt = la.reduce((s, a) => s + a.sets * a.reps, 0);
+const at = aa.reduce((s, a) => s + a.sets * a.reps, 0);
+ok('leader assistance 25-50 per category', la.every(a => a.sets * a.reps >= 25 && a.sets * a.reps <= 50), `leader ${lt} total, ${lt / 3} per category`);
+ok('anchor assistance 50-100 per category', aa.every(a => a.sets * a.reps >= 50 && a.sets * a.reps <= 100), `anchor ${at} total, ${at / 3} per category`);
+ok('anchor assistance > leader assistance', at > lt, `${at} vs ${lt}`);
+eq('assistance has 3 categories', la.map(a => a.cat), ['push', 'pull', 'singleleg']);
+
+// ---- BBB leader drops legs/core to 0-25
+const bbbAcc = E.assistanceFor('leader1', 'squat', { supplemental: 'bbb50' });
+ok('BBB leader core 0-25', bbbAcc[2].sets * bbbAcc[2].reps <= 25, `${bbbAcc[2].sets}x${bbbAcc[2].reps}`);
+
+// ---- block flow
+const s = (b) => E.advance(b, cfg);
+eq('leader1 w1 -> w2', s({ n: 1, phase: 'leader1', week: 1 }).week, 2);
+const l1end = s({ n: 1, phase: 'leader1', week: 3 });
+eq('leader1 end -> leader2 w1', [l1end.phase, l1end.week, l1end.gained], ['leader2', 1, true]);
+const l2end = s({ n: 1, phase: 'leader2', week: 3 });
+eq('leader2 end -> deload (no gain yet)', [l2end.phase, l2end.week, l2end.gained], ['deload', 1, false]);
+const dlend = s({ n: 1, phase: 'deload', week: 1 });
+eq('deload end -> anchor, +TM', [dlend.phase, dlend.week, dlend.gained], ['anchor', 1, true]);
+const anend = s({ n: 1, phase: 'anchor', week: 3 });
+eq('anchor end -> tm test, no gain', [anend.phase, anend.week, anend.gained], ['tmtest', 1, false]);
+const ttend = s({ n: 1, phase: 'tmtest', week: 1 });
+eq('tm test end -> new block', [ttend.phase, ttend.week, ttend.n], ['leader1', 1, 2]);
+
+// ---- walk a whole block, count weeks
+let b = { n: 1, phase: 'leader1', week: 1 };
+const seen = [];
+for (let i = 0; i < 11; i++) {
+  seen.push(`${b.phase}w${b.week}`);
+  const a = E.advance(b, cfg);
+  b = { n: a.n, phase: a.phase, week: a.week };
+}
+eq('block is 11 weeks', seen.length, 11);
+eq('week 10 is anchor week 3', seen[9], 'anchorw3');
+eq('week 11 is the TM test', seen[10], 'tmtestw1');
+eq('next block starts clean', [b.n, b.phase, b.week], [2, 'leader1', 1]);
+
+// ---- recalibration
+const r = E.recalibrate(150, 3, 0.85);
+eq('fail 3 reps at 150 TM', [r.oneRm, r.tm], [165, 140]);
+const r5 = E.recalibrate(150, 5, 0.85);
+eq('5 reps at 150 TM', [r5.oneRm, r5.tm], [175, 150]);
+
+// ---- render
+const out = document.getElementById('out');
+out.innerHTML = rows.map(r => `<div class="t"><span class="dot ${r.ok ? 'pass' : 'fail'}">${r.ok ? '✓' : '✗'}</span><div>${r.name}<small>${r.detail}</small></div></div>`).join('');
+document.getElementById('p').textContent = pass;
+document.getElementById('f').textContent = fail;
+document.getElementById('f').className = fail ? 'fail' : 'pass';
+
+const t = [];
+for (const ph of E.SEQUENCE) {
+  for (let w = 1; w <= ph.weeks; w++) {
+    const sets = E.mainSets(ph.phase, w, TM, cfg);
+    t.push(`<tr><th>${ph.label} w${w}</th><td>${sets.map(s => `${Math.round(s.pct * 100)}% ${s.weight}×${s.reps}`).join(' &nbsp; ')}</td></tr>`);
+  }
+}
+document.getElementById('table').innerHTML = `<table>${t.join('')}</table>`;
+</script>
+</body>
+</html>
