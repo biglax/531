@@ -1,4 +1,4 @@
-import * as E from './engine.js?v=8';
+import * as E from './engine.js?v=9';
 
 const KEY = '531_v2';
 const LEGACY = '531_forever_state';
@@ -20,10 +20,12 @@ function blank() {
     v: 2,
     block: { n: 1, phase: 'leader1', week: 1 },
     lifts,
-    cfg: { tmPct: 0.85, supplemental: 'fsl', anchorStyle: '351', rest: 180 },
+    cfg: { tmPct: 0.85, supplemental: 'fsl', anchorStyle: '351', rest: 180, goal: 78 },
     logs: {},
     loads: {},
     cond: {},
+    steps: {},
+    bw: {},
     createdAt: Date.now(),
   };
 }
@@ -59,6 +61,28 @@ function logFor(lift) {
   const k = keyFor(lift);
   if (!state.logs[k]) state.logs[k] = { sets: {}, assist: {}, amrap: null, t: 0 };
   return state.logs[k];
+}
+
+function weekKey() {
+  return `b${state.block.n}:w${state.block.week}`;
+}
+
+function stepMarks() {
+  const k = weekKey();
+  if (!Array.isArray(state.steps[k])) state.steps[k] = E.STEP_DAYS.map(() => false);
+  return state.steps[k];
+}
+
+function bwEntries() {
+  const out = [];
+  for (const [k, v] of Object.entries(state.bw || {})) {
+    const m = k.match(/^b(\d+):w(\d+)$/);
+    const kg = parseFloat(v);
+    if (!m || !(kg > 0)) continue;
+    out.push({ k, block: +m[1], week: +m[2], kg });
+  }
+  out.sort((a, b) => a.block - b.block || a.week - b.week);
+  return out;
 }
 
 function allEntries() {
@@ -344,6 +368,8 @@ function todayHtml() {
     </div>
 
     ${conditioningHtml()}
+    ${stepsHtml()}
+    ${bwHtml()}
 
     ${isTest ? testSummaryHtml() : `
       <button class="btn" data-act="finish" style="margin-top:16px">Finish week</button>
@@ -414,8 +440,7 @@ function assistMove(a, m, i, lift) {
 }
 
 function conditioningHtml() {
-  const k = `b${state.block.n}:w${state.block.week}`;
-  const marks = state.cond[k] || [false, false, false];
+  const marks = state.cond[weekKey()] || [false, false, false];
   const done = marks.filter(Boolean).length;
   return `
     <div class="section-label">Conditioning <b>${done}/3 this week</b></div>
@@ -427,7 +452,65 @@ function conditioningHtml() {
         </button>`
       ).join('')}
     </div>
-    <p class="cond-note">Two easy sessions are the floor. The hard one only if recovery is good. Aim 8-10k steps daily.</p>`;
+    <p class="cond-note">Both easy sessions sit on your rest days so they cost no recovery. The hard one is the only optional one.</p>`;
+}
+
+function stepsHtml() {
+  const marks = stepMarks();
+  const done = marks.filter(Boolean).length;
+  return `
+    <div class="section-label">Steps <b>${done}/7 days at ${E.STEP_FLOOR.toLocaleString()}+</b></div>
+    <div class="steps">
+      ${E.STEP_DAYS.map(
+        (d, i) => `<button class="step-day ${marks[i] ? 'hit' : ''}" data-act="step" data-idx="${i}">${d}</button>`
+      ).join('')}
+    </div>
+    <p class="steps-note">Tick a day once you clear ${E.STEP_FLOOR.toLocaleString()}. The spread between 6.5k and 10k is worth about 0.2 kg a week, more than both easy sessions together.</p>`;
+}
+
+function bwHtml() {
+  const list = bwEntries();
+  const k = weekKey();
+  const typed = state.bw[k];
+  const goal = parseFloat(state.cfg.goal) || 0;
+  const now = list.length ? list[list.length - 1] : null;
+  const prev = list.length > 1 ? list[list.length - 2] : null;
+
+  let deltaHtml = '';
+  if (now && prev) {
+    const d = Math.round((now.kg - prev.kg) * 10) / 10;
+    const colour = d < 0 ? 'var(--ok)' : d > 0 ? 'var(--accent)' : 'var(--dim)';
+    deltaHtml = `<span style="color:${colour};font-size:12px;font-family:var(--mono)">${d > 0 ? '+' : ''}${d.toFixed(1)} kg vs last</span>`;
+  }
+
+  const togo = now && goal ? Math.round((now.kg - goal) * 10) / 10 : null;
+  const start = list.length ? list[0].kg : 0;
+  const span = start && goal ? start - goal : 0;
+  const moved = start && now ? start - now.kg : 0;
+  const pct = span > 0 ? Math.max(0, Math.min(100, Math.round((moved / span) * 100))) : 0;
+
+  const hist = list
+    .slice(-6)
+    .reverse()
+    .map((e) => `<span>w${e.week} <b>${e.kg.toFixed(1)}</b></span>`)
+    .join('');
+
+  return `
+    <div class="section-label">Bodyweight <b>${goal ? `goal ${goal.toFixed(1)} kg` : 'set a goal in setup'}</b></div>
+    <div class="bw-top">
+      <div class="bw-now">${now ? now.kg.toFixed(1) : '—'}<small>kg</small></div>
+      <div style="text-align:right">
+        ${deltaHtml}
+        ${togo !== null && togo > 0 ? `<div style="font-size:11px;color:var(--dim);margin-top:2px">${togo.toFixed(1)} kg to go</div>` : ''}
+      </div>
+    </div>
+    <div class="bw-bar"><i style="width:${pct}%"></i></div>
+    <div class="bw-input">
+      <input type="number" inputmode="decimal" step="0.1" data-act="bw" placeholder="this week"
+        value="${typed || ''}" />
+      <span style="font-size:11px;color:var(--dim)">Weigh in once a week, same day, same time.</span>
+    </div>
+    ${hist ? `<div class="bw-hist">${hist}</div>` : ''}`;
 }
 
 function testSummaryHtml() {
@@ -607,6 +690,13 @@ function settingsHtml() {
           ${[90, 120, 150, 180, 240, 300].map((v) => `<option value="${v}" ${+c.rest === v ? 'selected' : ''}>${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}</option>`).join('')}
         </select>
       </div>
+      <div class="row"><span class="k">Goal weight<small>Drives the bodyweight bar</small></span>
+        <input type="number" inputmode="decimal" step="0.1" data-act="cfg" data-key="goal"
+          value="${+c.goal || ''}" placeholder="kg" />
+      </div>
+      <div class="row"><span class="k">Step floor<small>Daily target on the Steps card</small></span>
+        <span class="v">${E.STEP_FLOOR.toLocaleString()}</span>
+      </div>
     </div>
 
     <div class="h2">Data</div>
@@ -625,7 +715,8 @@ function settingsHtml() {
       <p style="margin:0;font-size:12px;color:var(--muted);line-height:1.6">
         Leader 1, Leader 2, deload, Anchor, TM test. Leaders are 5s PRO with volume supplemental and 25-50 assistance reps per category.
         The Anchor is 3/5/1 with PR sets on weeks 1 and 3 and 50-100 assistance reps. Training maxes go up 5 kg lower / 2.5 kg upper
-        after each Leader and after a passed TM test. Conditioning runs 2-3 sessions a week alongside the lifting.
+        after each Leader and after a passed TM test. Conditioning runs 2-3 sessions a week alongside the lifting, both easy
+        sessions on Wednesday and Saturday so they cost no recovery. Steps carry a daily ${E.STEP_FLOOR.toLocaleString()} floor.
       </p>
     </div>
     <p class="foot">5/3/1 FOREVER · v2</p>
@@ -868,10 +959,18 @@ document.addEventListener('click', (e) => {
     return;
   }
   if (act === 'cond') {
-    const k = `b${state.block.n}:w${state.block.week}`;
+    const k = weekKey();
     state.cond[k] = state.cond[k] || [false, false, false];
     const i = +t.dataset.idx;
     state.cond[k][i] = !state.cond[k][i];
+    save();
+    render(true);
+    return;
+  }
+  if (act === 'step') {
+    const marks = stepMarks();
+    const i = +t.dataset.idx;
+    marks[i] = !marks[i];
     save();
     render(true);
     return;
@@ -951,6 +1050,17 @@ document.addEventListener('change', (e) => {
     setAmrap(t.dataset.lift, parseFloat(t.dataset.weight), t.value);
     return;
   }
+  if (act === 'bw') {
+    const kg = parseFloat(t.value);
+    if (!(kg > 0)) {
+      delete state.bw[weekKey()];
+    } else {
+      state.bw[weekKey()] = Math.round(kg * 10) / 10;
+    }
+    save();
+    render(true);
+    return;
+  }
   if (act === 'load') {
     const k = `${t.dataset.lift}:${t.dataset.cat}:${t.dataset.idx}`;
     state.loads[k] = state.loads[k] || {};
@@ -966,7 +1076,8 @@ document.addEventListener('change', (e) => {
   }
   if (act === 'cfg') {
     const k = t.dataset.key;
-    state.cfg[k] = k === 'rest' ? +t.value : k === 'tmPct' ? parseFloat(t.value) : t.value;
+    const num = k === 'rest' ? +t.value : ['tmPct', 'goal'].includes(k) ? parseFloat(t.value) : t.value;
+    state.cfg[k] = num;
     save();
     render(true);
     return;
@@ -979,7 +1090,7 @@ document.addEventListener('change', (e) => {
       try {
         const s = JSON.parse(reader.result);
         if (!s || s.v !== 2) throw new Error('bad');
-        state = s;
+        state = normalize(s);
         save();
         render();
         toast('Backup restored');
@@ -1003,10 +1114,19 @@ function migrateLoads() {
   save();
 }
 
+function normalize(s) {
+  s.cond = s.cond || {};
+  s.steps = s.steps || {};
+  s.bw = s.bw || {};
+  s.cfg = s.cfg || {};
+  if (!(parseFloat(s.cfg.goal) > 0)) s.cfg.goal = 78;
+  return s;
+}
+
 function init() {
   state = load();
   if (state) {
-    state.cond = state.cond || {};
+    normalize(state);
     migrateLoads();
   }
   if (state) {

@@ -33,7 +33,7 @@
   <div id="table"></div>
 </div>
 <script type="module">
-import * as E from './engine.js?v=8';
+import * as E from './engine.js?v=9';
 
 let pass = 0, fail = 0;
 const rows = [];
@@ -127,6 +127,15 @@ eq('press pull starts with curls', prA[1].movements[0].name, 'Biceps Curl');
 ok('deadlift day has no loaded back extension', !JSON.stringify(dlA).includes('Back Extension'), JSON.stringify(dlA.map(a => a.movements.map(m => m.name))));
 ok('every anchor category stays in 50-100', [sqA, prA, dlA].map(x => x.map(a => a.total)).flat().every(t => t >= 50 && t <= 100), JSON.stringify([sqA, prA, dlA].map(x => x.map(a => a.total))));
 eq('conditioning has three sessions', E.CONDITIONING.length, 3);
+
+// ---- conditioning sits on rest days, steps carry a floor
+const condDays = E.CONDITIONING.map(c => c.label.split(' · ')[0]);
+ok('conditioning only on rest days', condDays.every(d => ['Wed', 'Sat'].includes(d)), condDays.join('/'));
+eq('both easy sessions are first', condDays.slice(0, 2), ['Wed', 'Sat']);
+eq('two easy sessions', E.CONDITIONING.filter(c => c.label.includes('Easy')).length, 2);
+eq('step floor is 8000', E.STEP_FLOOR, 8000);
+eq('seven step days', E.STEP_DAYS.length, 7);
+eq('step days start on Monday', E.STEP_DAYS[0], 'Mon');
 
 // ---- BBB leader drops legs/core to 0-25
 const bbbAcc = E.assistanceFor('leader1', 'squat', { supplemental: 'bbb50' });

@@ -190,11 +190,20 @@ const ANCHOR_PAIRS = {
 };
 
 // Conditioning: Forever runs it alongside the lifting, 2-3 sessions a week.
+// Frank's week is squat, bench, press, deads, with Wednesday and Saturday free
+// in both possible layouts (squat Sunday or squat Monday). So both easy
+// sessions sit on rest days and the hard one goes to Wednesday: furthest from a
+// heavy day, and ahead of press, the lightest lift.
 export const CONDITIONING = [
-  { label: 'Easy 30 min', detail: 'Bike or incline walk. Nasal breathing.' },
-  { label: 'Easy 30 min', detail: 'Bike or incline walk. After squat or deadlift.' },
-  { label: 'Hard 10 min', detail: 'Rower or sled intervals. Only if recovery is good.' },
+  { label: 'Wed · Easy 30 min', detail: 'Rest day. Bike or incline walk, nasal breathing.' },
+  { label: 'Sat · Easy 30 min', detail: 'Rest day. Bike or incline walk, same easy pace.' },
+  { label: 'Wed · Hard 10 min', detail: 'Rower or sled intervals. Only if recovery is good, never the day before squat.' },
 ];
+
+// Daily step floor on a cut. The gap between 6.5k and 10k steps is worth about
+// 0.2 kg a week on its own, which is more than both easy sessions combined.
+export const STEP_FLOOR = 8000;
+export const STEP_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export function assistanceFor(phase, lift, cfg) {
   const info = phaseInfo(phase);

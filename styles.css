@@ -352,6 +352,64 @@ input[type="number"] { font-family: var(--mono); }
   line-height: 1.5;
 }
 
+/* ---------- steps ---------- */
+.steps { display: flex; gap: 6px; padding: 2px 18px 4px; }
+.step-day {
+  flex: 1 1 0;
+  min-height: 46px;
+  border-radius: 10px;
+  border: 1px solid var(--line2);
+  background: transparent;
+  color: var(--dim);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.step-day.hit { background: var(--text); border-color: var(--text); color: var(--bg); }
+.steps-note {
+  margin: 4px 18px 16px;
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+/* ---------- bodyweight ---------- */
+.bw-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 18px 0;
+}
+.bw-now { font-family: var(--mono); font-size: 30px; letter-spacing: -0.03em; line-height: 1; }
+.bw-now small { font-size: 13px; color: var(--dim); margin-left: 3px; letter-spacing: 0; }
+.bw-bar {
+  height: 4px;
+  background: var(--s2);
+  border-radius: 4px;
+  margin: 12px 18px 0;
+  overflow: hidden;
+}
+.bw-bar i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+.bw-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 0;
+}
+.bw-input input { width: 118px; min-height: 42px; padding: 8px 10px; font-size: 15px; }
+.bw-hist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 12px 18px 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+.bw-hist b { color: var(--text); font-weight: 600; }
+
 /* ---------- buttons ---------- */
 .btn {
   display: flex;

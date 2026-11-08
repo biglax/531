@@ -1,12 +1,12 @@
-const CACHE = '531-v8';
+const CACHE = '531-v9';
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=8',
-  './app.js?v=8',
+  './styles.css?v=9',
+  './app.js?v=9',
   './styles.css',
   './app.js',
-  './engine.js?v=8',
+  './engine.js?v=9',
   './engine.js',
   './manifest.webmanifest',
   './icon-192.png',
