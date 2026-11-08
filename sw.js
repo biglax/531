@@ -1,11 +1,12 @@
-const CACHE = '531-v7';
+const CACHE = '531-v8';
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=7',
-  './app.js?v=7',
+  './styles.css?v=8',
+  './app.js?v=8',
   './styles.css',
   './app.js',
+  './engine.js?v=8',
   './engine.js',
   './manifest.webmanifest',
   './icon-192.png',
@@ -29,7 +30,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-store' })
       .then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});

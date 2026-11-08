@@ -1,4 +1,4 @@
-import * as E from './engine.js';
+import * as E from './engine.js?v=8';
 
 const KEY = '531_v2';
 const LEGACY = '531_forever_state';
