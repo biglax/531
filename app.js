@@ -401,7 +401,7 @@ function assistMove(a, m, i, lift) {
   return `<div class="assist-move">
     <div class="assist-head">
       <span class="assist-name">${esc(m.name)}</span>
-      <span class="assist-presc">${m.sets} × ${m.reps}</span>
+      <span class="assist-presc">${m.sets} × ${m.reps}${m.perSide ? ' each' : ''}</span>
     </div>
     <div class="assist-inputs">
       <input type="number" inputmode="decimal" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-idx="${i}" data-field="kg"

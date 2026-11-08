@@ -139,36 +139,53 @@ export function supplemental(phase, week, tm, cfg) {
   }
 }
 
+// Leader picks: one movement per category, 25-50 total reps.
+// perSide movements are counted per leg, so sets x reps x 2.
 export const ASSIST = {
-  squat: { push: 'Lateral Raise', pull: 'Lat Pulldown', singleleg: 'DB Split Squat' },
-  bench: { push: 'Incline DB Press', pull: 'Seated Cable Row', singleleg: 'Hanging Leg Raise' },
-  deadlift: { push: 'Dips', pull: 'Chin-Up', singleleg: 'Pallof Press' },
-  press: { push: 'Lateral Raise', pull: 'Biceps Curl', singleleg: 'Walking Lunge' },
+  squat: {
+    push: { name: 'Lateral Raise', sets: 3, reps: 12 },
+    pull: { name: 'Lat Pulldown', sets: 3, reps: 12 },
+    singleleg: { name: 'DB Step-Up', sets: 2, reps: 10, perSide: true },
+  },
+  bench: {
+    push: { name: 'Incline DB Press', sets: 3, reps: 12 },
+    pull: { name: 'Seated Cable Row', sets: 3, reps: 12 },
+    singleleg: { name: 'Hanging Leg Raise', sets: 3, reps: 12 },
+  },
+  deadlift: {
+    push: { name: 'Dips', sets: 3, reps: 12 },
+    pull: { name: 'Chin-Up', sets: 3, reps: 12 },
+    singleleg: { name: 'Pallof Press', sets: 2, reps: 10, perSide: true },
+  },
+  press: {
+    push: { name: 'Lateral Raise', sets: 3, reps: 12 },
+    pull: { name: 'Biceps Curl', sets: 3, reps: 12 },
+    singleleg: { name: 'Walking Lunge', sets: 2, reps: 10, perSide: true },
+  },
 };
 
 // Anchor: the book allows one or two exercises per category for 50-100 total reps.
-// Two movements, three sets of the main-lift support movement, two of the accessory.
-// Cutting: split squats and lunges stay at two sets so leg volume does not eat recovery.
+// Two movements, and unilateral work is counted per leg, so the totals stay honest.
 const ANCHOR_PAIRS = {
   squat: {
-    push: [['Lateral Raise', 3, 15], ['Triceps Pushdown', 2, 15]],
-    pull: [['Lat Pulldown', 3, 15], ['Face Pull', 2, 15]],
-    singleleg: [['DB Split Squat', 2, 15], ['Weighted Cable Crunch', 3, 15]],
+    push: [{ name: 'Lateral Raise', sets: 3, reps: 15 }, { name: 'Triceps Pushdown', sets: 2, reps: 15 }],
+    pull: [{ name: 'Lat Pulldown', sets: 3, reps: 15 }, { name: 'Face Pull', sets: 2, reps: 15 }],
+    singleleg: [{ name: 'DB Step-Up', sets: 2, reps: 12, perSide: true }, { name: 'Weighted Cable Crunch', sets: 3, reps: 15 }],
   },
   bench: {
-    push: [['Incline DB Press', 3, 15], ['Lateral Raise', 2, 15]],
-    pull: [['Seated Cable Row', 3, 15], ['Face Pull', 2, 15]],
-    singleleg: [['Leg Curl', 3, 15], ['Hanging Leg Raise', 2, 15]],
+    push: [{ name: 'Incline DB Press', sets: 3, reps: 15 }, { name: 'Lateral Raise', sets: 2, reps: 15 }],
+    pull: [{ name: 'Seated Cable Row', sets: 3, reps: 15 }, { name: 'Face Pull', sets: 2, reps: 15 }],
+    singleleg: [{ name: 'Leg Curl', sets: 3, reps: 15 }, { name: 'Hanging Leg Raise', sets: 2, reps: 15 }],
   },
   deadlift: {
-    push: [['Dips', 3, 15], ['Lateral Raise', 2, 15]],
-    pull: [['Chin-Up', 3, 15], ['Chest-Supported Row', 2, 15]],
-    singleleg: [['Hanging Leg Raise', 3, 15], ['Pallof Press', 2, 15]],
+    push: [{ name: 'Dips', sets: 3, reps: 15 }, { name: 'Lateral Raise', sets: 2, reps: 15 }],
+    pull: [{ name: 'Chin-Up', sets: 3, reps: 15 }, { name: 'Chest-Supported Row', sets: 2, reps: 15 }],
+    singleleg: [{ name: 'Hanging Leg Raise', sets: 3, reps: 15 }, { name: 'Pallof Press', sets: 2, reps: 12, perSide: true }],
   },
   press: {
-    push: [['Lateral Raise', 3, 15], ['Triceps Pushdown', 2, 15]],
-    pull: [['Biceps Curl', 3, 15], ['Chin-Up', 2, 15]],
-    singleleg: [['Walking Lunge', 2, 15], ['Leg Curl', 3, 15]],
+    push: [{ name: 'Lateral Raise', sets: 3, reps: 15 }, { name: 'Triceps Pushdown', sets: 2, reps: 15 }],
+    pull: [{ name: 'Biceps Curl', sets: 3, reps: 15 }, { name: 'Chin-Up', sets: 2, reps: 15 }],
+    singleleg: [{ name: 'Walking Lunge', sets: 2, reps: 12, perSide: true }, { name: 'Leg Curl', sets: 3, reps: 15 }],
   },
 };
 
@@ -194,14 +211,14 @@ export function assistanceFor(phase, lift, cfg) {
   return cats.map((c) => {
     let movements;
     if (anchor) {
-      movements = ANCHOR_PAIRS[lift][c.cat].map(([name, sets, reps]) => ({ name, sets, reps }));
+      movements = ANCHOR_PAIRS[lift][c.cat].map((m) => ({ ...m }));
     } else if (lowCore && c.cat === 'singleleg') {
-      movements = [{ name: ASSIST[lift].singleleg, sets: 2, reps: 10 }];
+      movements = [{ ...ASSIST[lift].singleleg, sets: 1, reps: 10 }];
     } else {
-      movements = [{ name: ASSIST[lift][c.cat], sets: 3, reps: 12 }];
+      movements = [{ ...ASSIST[lift][c.cat] }];
     }
 
-    const total = movements.reduce((n, m) => n + m.sets * m.reps, 0);
+    const total = movements.reduce((n, m) => n + m.sets * m.reps * (m.perSide ? 2 : 1), 0);
     return {
       cat: c.cat,
       label: c.label,

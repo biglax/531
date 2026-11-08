@@ -1,9 +1,9 @@
-const CACHE = '531-v6';
+const CACHE = '531-v7';
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=6',
-  './app.js?v=6',
+  './styles.css?v=7',
+  './app.js?v=7',
   './styles.css',
   './app.js',
   './engine.js',
