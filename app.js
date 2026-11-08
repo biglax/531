@@ -23,6 +23,7 @@ function blank() {
     cfg: { tmPct: 0.85, supplemental: 'fsl', anchorStyle: '351', rest: 180 },
     logs: {},
     loads: {},
+    cond: {},
     createdAt: Date.now(),
   };
 }
@@ -335,12 +336,14 @@ function todayHtml() {
           <div class="supp-note">${Math.round(supp.pct * 100)}% of TM. ${supp.note}</div>
         </div>` : ''}
 
-      <div class="section-label">Assistance <b>${isTest || isDeload ? 'optional' : 'per category'}</b></div>
+      <div class="section-label">Assistance <b>${isTest || isDeload ? 'optional' : E.phaseInfo(b.phase).kind === 'anchor' ? '50-100 each' : '25-50 each'}</b></div>
       <div class="assist">
         <div class="assist-note">${E.assistanceNote(b.phase, state.cfg)}</div>
         ${assist.map((a) => assistBlock(a, lift)).join('')}
       </div>
     </div>
+
+    ${conditioningHtml()}
 
     ${isTest ? testSummaryHtml() : `
       <button class="btn" data-act="finish" style="margin-top:16px">Finish week</button>
@@ -408,6 +411,23 @@ function assistMove(a, m, i, lift) {
       <span class="hint">${last.kg ? `last ${last.kg}×${last.reps}` : ''}</span>
     </div>
   </div>`;
+}
+
+function conditioningHtml() {
+  const k = `b${state.block.n}:w${state.block.week}`;
+  const marks = state.cond[k] || [false, false, false];
+  const done = marks.filter(Boolean).length;
+  return `
+    <div class="section-label">Conditioning <b>${done}/3 this week</b></div>
+    <div class="cond">
+      ${E.CONDITIONING.map(
+        (c, i) => `<button class="cond-row ${marks[i] ? 'hit' : ''}" data-act="cond" data-idx="${i}">
+          <span class="cond-tick"></span>
+          <span class="cond-body"><b>${c.label}</b><small>${c.detail}</small></span>
+        </button>`
+      ).join('')}
+    </div>
+    <p class="cond-note">Two easy sessions are the floor. The hard one only if recovery is good. Aim 8-10k steps daily.</p>`;
 }
 
 function testSummaryHtml() {
@@ -605,7 +625,7 @@ function settingsHtml() {
       <p style="margin:0;font-size:12px;color:var(--muted);line-height:1.6">
         Leader 1, Leader 2, deload, Anchor, TM test. Leaders are 5s PRO with volume supplemental and 25-50 assistance reps per category.
         The Anchor is 3/5/1 with PR sets on weeks 1 and 3 and 50-100 assistance reps. Training maxes go up 5 kg lower / 2.5 kg upper
-        after each Leader and after a passed TM test. Deload and test follow the 7th Week Protocol.
+        after each Leader and after a passed TM test. Conditioning runs 2-3 sessions a week alongside the lifting.
       </p>
     </div>
     <p class="foot">5/3/1 FOREVER · v2</p>
@@ -847,6 +867,15 @@ document.addEventListener('click', (e) => {
     toggleSet(+t.dataset.idx);
     return;
   }
+  if (act === 'cond') {
+    const k = `b${state.block.n}:w${state.block.week}`;
+    state.cond[k] = state.cond[k] || [false, false, false];
+    const i = +t.dataset.idx;
+    state.cond[k][i] = !state.cond[k][i];
+    save();
+    render(true);
+    return;
+  }
   if (act === 'finish') {
     finishWeek();
     return;
@@ -976,7 +1005,10 @@ function migrateLoads() {
 
 function init() {
   state = load();
-  if (state) migrateLoads();
+  if (state) {
+    state.cond = state.cond || {};
+    migrateLoads();
+  }
   if (state) {
     render();
     return;

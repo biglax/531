@@ -140,19 +140,20 @@ export function supplemental(phase, week, tm, cfg) {
 }
 
 export const ASSIST = {
-  squat: { push: 'Lateral Raise', pull: 'Lat Pulldown', singleleg: 'Weighted Cable Crunch', kind: 'core' },
-  bench: { push: 'Incline DB Press', pull: 'Seated Cable Row', singleleg: 'Leg Curl', kind: 'single' },
-  deadlift: { push: 'Dips', pull: 'Chin-Up', singleleg: 'Back Extension + Hanging Leg Raise', kind: 'core' },
-  press: { push: 'Lateral Raise', pull: 'Face Pull', singleleg: 'Walking Lunge', kind: 'single' },
+  squat: { push: 'Lateral Raise', pull: 'Lat Pulldown', singleleg: 'DB Split Squat' },
+  bench: { push: 'Incline DB Press', pull: 'Seated Cable Row', singleleg: 'Hanging Leg Raise' },
+  deadlift: { push: 'Dips', pull: 'Chin-Up', singleleg: 'Pallof Press' },
+  press: { push: 'Lateral Raise', pull: 'Biceps Curl', singleleg: 'Walking Lunge' },
 };
 
-// Anchor: the book says pick one or two exercises per category and hit 50-100 total reps.
-// Two movements, three sets of the one that supports the main lift, two sets of the accessory one.
+// Anchor: the book allows one or two exercises per category for 50-100 total reps.
+// Two movements, three sets of the main-lift support movement, two of the accessory.
+// Cutting: split squats and lunges stay at two sets so leg volume does not eat recovery.
 const ANCHOR_PAIRS = {
   squat: {
     push: [['Lateral Raise', 3, 15], ['Triceps Pushdown', 2, 15]],
     pull: [['Lat Pulldown', 3, 15], ['Face Pull', 2, 15]],
-    singleleg: [['Weighted Cable Crunch', 3, 15], ['Back Extension', 2, 15]],
+    singleleg: [['DB Split Squat', 2, 15], ['Weighted Cable Crunch', 3, 15]],
   },
   bench: {
     push: [['Incline DB Press', 3, 15], ['Lateral Raise', 2, 15]],
@@ -162,14 +163,21 @@ const ANCHOR_PAIRS = {
   deadlift: {
     push: [['Dips', 3, 15], ['Lateral Raise', 2, 15]],
     pull: [['Chin-Up', 3, 15], ['Chest-Supported Row', 2, 15]],
-    singleleg: [['Hanging Leg Raise', 3, 15], ['Back Extension', 2, 15]],
+    singleleg: [['Hanging Leg Raise', 3, 15], ['Pallof Press', 2, 15]],
   },
   press: {
     push: [['Lateral Raise', 3, 15], ['Triceps Pushdown', 2, 15]],
-    pull: [['Face Pull', 3, 15], ['Chin-Up', 2, 15]],
-    singleleg: [['Walking Lunge', 3, 15], ['Leg Curl', 2, 15]],
+    pull: [['Biceps Curl', 3, 15], ['Chin-Up', 2, 15]],
+    singleleg: [['Walking Lunge', 2, 15], ['Leg Curl', 3, 15]],
   },
 };
+
+// Conditioning: Forever runs it alongside the lifting, 2-3 sessions a week.
+export const CONDITIONING = [
+  { label: 'Easy 30 min', detail: 'Bike or incline walk. Nasal breathing.' },
+  { label: 'Easy 30 min', detail: 'Bike or incline walk. After squat or deadlift.' },
+  { label: 'Hard 10 min', detail: 'Rower or sled intervals. Only if recovery is good.' },
+];
 
 export function assistanceFor(phase, lift, cfg) {
   const info = phaseInfo(phase);
@@ -180,7 +188,7 @@ export function assistanceFor(phase, lift, cfg) {
   const cats = [
     { cat: 'push', label: 'PUSH' },
     { cat: 'pull', label: 'PULL' },
-    { cat: 'singleleg', label: ASSIST[lift].kind === 'single' ? 'SINGLE LEG' : 'CORE' },
+    { cat: 'singleleg', label: 'SINGLE LEG / CORE' },
   ];
 
   return cats.map((c) => {

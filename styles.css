@@ -309,6 +309,49 @@ input[type="number"] { font-family: var(--mono); }
 .assist-inputs input { width: 84px; text-align: center; font-size: 15px; min-height: 44px; padding: 8px; }
 .assist-inputs .hint { font-size: 10px; color: var(--dim); }
 
+/* ---------- conditioning ---------- */
+.cond { padding: 2px 18px 4px; }
+.cond-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(35, 38, 42, 0.6);
+  min-height: 58px;
+}
+.cond-row:last-child { border-bottom: 0; }
+.cond-row.hit { opacity: 0.42; }
+.cond-tick {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line2);
+  flex: 0 0 auto;
+  position: relative;
+}
+.cond-row.hit .cond-tick { background: var(--text); border-color: var(--text); }
+.cond-row.hit .cond-tick::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  width: 8px;
+  height: 4px;
+  border-left: 2px solid #15171a;
+  border-bottom: 2px solid #15171a;
+  transform: rotate(-45deg);
+}
+.cond-body b { display: block; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.cond-body small { display: block; font-size: 11px; color: var(--dim); margin-top: 2px; line-height: 1.4; }
+.cond-note {
+  margin: 4px 18px 16px;
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
 /* ---------- buttons ---------- */
 .btn {
   display: flex;

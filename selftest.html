@@ -117,6 +117,16 @@ eq('anchor movements are 15 reps', aa[0].movements.map(m => m.reps), [15, 15]);
 eq('anchor total is 75', aa[0].total, 75);
 eq('leader total is 36', la[0].total, 36);
 
+// ---- cut build: single leg twice, biceps in the pull slot
+const sqA = E.assistanceFor('anchor', 'squat', cfg);
+const prA = E.assistanceFor('anchor', 'press', cfg);
+const dlA = E.assistanceFor('anchor', 'deadlift', cfg);
+eq('squat single leg starts with split squat', sqA[2].movements[0].name, 'DB Split Squat');
+eq('press pull starts with curls', prA[1].movements[0].name, 'Biceps Curl');
+ok('deadlift day has no loaded back extension', !JSON.stringify(dlA).includes('Back Extension'), JSON.stringify(dlA.map(a => a.movements.map(m => m.name))));
+eq('every anchor category still totals 75', [sqA, prA, dlA].map(x => x.map(a => a.total)).flat(), [75, 75, 75, 75, 75, 75, 75, 75, 75]);
+eq('conditioning has three sessions', E.CONDITIONING.length, 3);
+
 // ---- BBB leader drops legs/core to 0-25
 const bbbAcc = E.assistanceFor('leader1', 'squat', { supplemental: 'bbb50' });
 ok('BBB leader core 0-25', bbbAcc[2].total <= 25, `${bbbAcc[2].total}`);

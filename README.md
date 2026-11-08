@@ -28,6 +28,9 @@ deload. A passed TM test carries them into the next block.
   Anchor 50-100. With BBB, the Leader drops single-leg/core to 0-25.
 - Anchor splits each category across two movements: 3x15 of the main-lift support movement, then 2x15 of
   the accessory one. 75 total reps per category. Leader stays on one movement at 3x12.
+- Cut configuration: true single-leg work twice a week (split squat on squat day, lunges on press day),
+  biceps on press day, no extra machine leg volume. Split squats and lunges stay at two sets.
+- Conditioning 2-3 sessions a week: two easy 30 minute sessions plus one optional short hard session.
 - Assistance is stable across cycles so it can actually be progressed.
 
 ## Files
