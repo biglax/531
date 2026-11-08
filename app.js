@@ -1,4 +1,4 @@
-import * as E from './engine.js?v=9';
+import * as E from './engine.js?v=10';
 
 const KEY = '531_v2';
 const LEGACY = '531_forever_state';
@@ -423,16 +423,20 @@ function assistBlock(a, lift) {
 function assistMove(a, m, i, lift) {
   const k = `${lift}:${a.cat}:${i}`;
   const legacy = i === 0 ? state.loads[`${lift}:${a.cat}`] : null;
-  const last = state.loads[k] || legacy || {};
+  const stored = state.loads[k] || legacy || {};
+  // A stored load only counts if it belongs to this movement. The anchor grid
+  // changed on v10 and a stale key would otherwise show a face-pull weight
+  // against a chin-up.
+  const last = stored.name && stored.name !== m.name ? {} : stored;
   return `<div class="assist-move">
     <div class="assist-head">
       <span class="assist-name">${esc(m.name)}</span>
       <span class="assist-presc">${m.sets} × ${m.reps}${m.perSide ? ' each' : ''}</span>
     </div>
     <div class="assist-inputs">
-      <input type="number" inputmode="decimal" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-idx="${i}" data-field="kg"
+      <input type="number" inputmode="decimal" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-idx="${i}" data-name="${esc(m.name)}" data-field="kg"
         value="${last.kg || ''}" placeholder="kg" />
-      <input type="number" inputmode="numeric" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-idx="${i}" data-field="reps"
+      <input type="number" inputmode="numeric" data-act="load" data-lift="${lift}" data-cat="${a.cat}" data-idx="${i}" data-name="${esc(m.name)}" data-field="reps"
         value="${last.reps || ''}" placeholder="reps" />
       <span class="hint">${last.kg ? `last ${last.kg}×${last.reps}` : ''}</span>
     </div>
@@ -1064,6 +1068,7 @@ document.addEventListener('change', (e) => {
   if (act === 'load') {
     const k = `${t.dataset.lift}:${t.dataset.cat}:${t.dataset.idx}`;
     state.loads[k] = state.loads[k] || {};
+    state.loads[k].name = t.dataset.name || '';
     state.loads[k][t.dataset.field] = t.value;
     save();
     return;
@@ -1119,7 +1124,15 @@ function normalize(s) {
   s.steps = s.steps || {};
   s.bw = s.bw || {};
   s.cfg = s.cfg || {};
+  s.loads = s.loads || {};
   if (!(parseFloat(s.cfg.goal) > 0)) s.cfg.goal = 78;
+  // v10 changed five anchor slots. Their stored loads belong to the old
+  // movements, so drop them once rather than showing a face-pull weight
+  // against a chin-up.
+  if (s.gridV !== 2) {
+    ['bench:push:1', 'bench:pull:1', 'press:pull:1', 'deadlift:push:1', 'deadlift:pull:1'].forEach((k) => delete s.loads[k]);
+    s.gridV = 2;
+  }
   return s;
 }
 

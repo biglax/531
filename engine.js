@@ -1,7 +1,7 @@
 // 5/3/1 Forever engine. Pure functions, no DOM.
 // Block structure: Leader 1 > Leader 2 > Deload > Anchor > TM Test > next block.
 
-export const LIFTS = ['squat', 'bench', 'deadlift', 'press'];
+export const LIFTS = ['squat', 'bench', 'press', 'deadlift'];
 export const LABEL = {
   squat: 'Squat',
   bench: 'Bench Press',
@@ -166,6 +166,11 @@ export const ASSIST = {
 
 // Anchor: the book allows one or two exercises per category for 50-100 total reps.
 // Two movements, and unilateral work is counted per leg, so the totals stay honest.
+// Frank's rotation is squat, bench, rest, press, deads, so squat+bench and
+// press+deads are the back to back pairs. Nothing repeats across a pair: the delt
+// and tricep work sits on squat and press, the pressing accessories on bench and
+// deads, and each day pulls from a different back angle. Wendler's advice is to
+// keep movements stable across a block, so these are fixed for the block, not rotated.
 const ANCHOR_PAIRS = {
   squat: {
     push: [{ name: 'Lateral Raise', sets: 3, reps: 15 }, { name: 'Triceps Pushdown', sets: 2, reps: 15 }],
@@ -173,19 +178,19 @@ const ANCHOR_PAIRS = {
     singleleg: [{ name: 'DB Step-Up', sets: 2, reps: 12, perSide: true }, { name: 'Weighted Cable Crunch', sets: 3, reps: 15 }],
   },
   bench: {
-    push: [{ name: 'Incline DB Press', sets: 3, reps: 15 }, { name: 'Lateral Raise', sets: 2, reps: 15 }],
-    pull: [{ name: 'Seated Cable Row', sets: 3, reps: 15 }, { name: 'Face Pull', sets: 2, reps: 15 }],
+    push: [{ name: 'Incline DB Press', sets: 3, reps: 15 }, { name: 'Dips', sets: 2, reps: 15 }],
+    pull: [{ name: 'Seated Cable Row', sets: 3, reps: 15 }, { name: 'Chin-Up', sets: 2, reps: 15 }],
     singleleg: [{ name: 'Leg Curl', sets: 3, reps: 15 }, { name: 'Hanging Leg Raise', sets: 2, reps: 15 }],
-  },
-  deadlift: {
-    push: [{ name: 'Dips', sets: 3, reps: 15 }, { name: 'Lateral Raise', sets: 2, reps: 15 }],
-    pull: [{ name: 'Chin-Up', sets: 3, reps: 15 }, { name: 'Chest-Supported Row', sets: 2, reps: 15 }],
-    singleleg: [{ name: 'Hanging Leg Raise', sets: 3, reps: 15 }, { name: 'Pallof Press', sets: 2, reps: 12, perSide: true }],
   },
   press: {
     push: [{ name: 'Lateral Raise', sets: 3, reps: 15 }, { name: 'Triceps Pushdown', sets: 2, reps: 15 }],
-    pull: [{ name: 'Biceps Curl', sets: 3, reps: 15 }, { name: 'Chin-Up', sets: 2, reps: 15 }],
+    pull: [{ name: 'Biceps Curl', sets: 3, reps: 15 }, { name: 'Chest-Supported Row', sets: 2, reps: 15 }],
     singleleg: [{ name: 'Walking Lunge', sets: 2, reps: 12, perSide: true }, { name: 'Leg Curl', sets: 3, reps: 15 }],
+  },
+  deadlift: {
+    push: [{ name: 'Dips', sets: 3, reps: 15 }, { name: 'Incline DB Press', sets: 2, reps: 15 }],
+    pull: [{ name: 'Chin-Up', sets: 3, reps: 15 }, { name: 'Rear Delt Fly', sets: 2, reps: 15 }],
+    singleleg: [{ name: 'Hanging Leg Raise', sets: 3, reps: 15 }, { name: 'Pallof Press', sets: 2, reps: 12, perSide: true }],
   },
 };
 

@@ -33,7 +33,7 @@
   <div id="table"></div>
 </div>
 <script type="module">
-import * as E from './engine.js?v=9';
+import * as E from './engine.js?v=10';
 
 let pass = 0, fail = 0;
 const rows = [];
@@ -127,6 +127,15 @@ eq('press pull starts with curls', prA[1].movements[0].name, 'Biceps Curl');
 ok('deadlift day has no loaded back extension', !JSON.stringify(dlA).includes('Back Extension'), JSON.stringify(dlA.map(a => a.movements.map(m => m.name))));
 ok('every anchor category stays in 50-100', [sqA, prA, dlA].map(x => x.map(a => a.total)).flat().every(t => t >= 50 && t <= 100), JSON.stringify([sqA, prA, dlA].map(x => x.map(a => a.total))));
 eq('conditioning has three sessions', E.CONDITIONING.length, 3);
+
+// ---- rotation order, and nothing repeating across back to back days
+eq('rotation order', E.LIFTS, ['squat', 'bench', 'press', 'deadlift']);
+const anchorNames = (l) => E.assistanceFor('anchor', l, cfg).flatMap(a => a.movements.map(m => m.name));
+const shared = (x, y) => anchorNames(x).filter(n => anchorNames(y).includes(n));
+eq('squat and bench share no movement', shared('squat', 'bench'), []);
+eq('press and deads share no movement', shared('press', 'deadlift'), []);
+ok('all four anchor days sit in 50-100 per category', ['squat', 'bench', 'press', 'deadlift'].every(l => E.assistanceFor('anchor', l, cfg).every(a => a.total >= 50 && a.total <= 100)),
+  JSON.stringify(['squat', 'bench', 'press', 'deadlift'].map(l => E.assistanceFor('anchor', l, cfg).map(a => a.total))));
 
 // ---- conditioning sits on rest days, steps carry a floor
 const condDays = E.CONDITIONING.map(c => c.label.split(' · ')[0]);
